@@ -1,27 +1,36 @@
 import React, { useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import { ThemeProvider } from '../contexts/themeContext';
 
-const Layout = ({children, showFooter = true} ) => {
+const Layout = ({ children, showFooter = true, isDirector = false, isTeacher = false, isStudent = false }) => {
     useEffect(() => {
         const theme = localStorage.getItem("theme") || "light"
         if (theme === "dark") {
-          document.documentElement.classList.add("dark")
+            document.documentElement.classList.add("dark")
         } else {
-          document.documentElement.classList.remove("dark")
+            document.documentElement.classList.remove("dark")
         }
-      }, [])
+    }, [])
+
     return (
-        <div className="min-h-screen flex flex-col px-4">
-            <Header />
-            <main className="min-h-[600px] bg-[#F6D8AE] rounded-lg  shadow-sm p-4">
-                {children}
-            </main>
-            {showFooter && (
-                <Footer />
-            )}
+        <div className="min-h-screen flex flex-col">
+            <ThemeProvider>
+                {/* Usa el Header dinámico y pasa los props de rol */}
+                <Header
+                    isDirector={isDirector}
+                    isTeacher={isTeacher}
+                    isStudent={isStudent}
+                />
+
+                <main className="min-h-[660px] bg-[#F6D8AE] rounded-lg shadow-sm p-4">
+                    {children}
+                </main>
+
+                {showFooter && <Footer />}
+            </ThemeProvider>
         </div>
-    );
-};
+    )
+}
 
 export default Layout;
