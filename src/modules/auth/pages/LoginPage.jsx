@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { register } from '../services/authService';
+import { login } from '../services/authService';
 
-const RegisterPage = () => {
-  const [form, setForm] = useState({ name: '', email: '', password: '', password_confirmation:'' });
+const LoginPage = () => {
+  const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState('');
 
@@ -15,8 +15,8 @@ const RegisterPage = () => {
     e.preventDefault();
     setErrors({});
     try {
-      const res = await register(form);
-      setSuccess('Usuario registrado correctamente');
+      const res = await login(form);
+      setSuccess('Inicio de sesión exitoso');
     } catch (err) {
       if (err.response?.status === 422) {
         setErrors(err.response.data.errors || {});
@@ -28,16 +28,6 @@ const RegisterPage = () => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto mt-8">
-      <div>
-        <input
-          name="name"
-          placeholder="Nombre"
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-        />
-        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-      </div>
-
       <div>
         <input
           name="email"
@@ -59,18 +49,7 @@ const RegisterPage = () => {
         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
       </div>
 
-      <div>
-        <input
-          name="password_confirmation"
-          type="password"
-          placeholder="Confirmar Contraseña"
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-        />
-        {/* Laravel no genera error específico para password_confirmation si falla, solo para password.confirmed */}
-      </div>
-
-      <button type="submit" className="bg-purple-600 text-white py-2 rounded">Registrarse</button>
+      <button type="submit" className="bg-blue-600 text-white py-2 rounded">Iniciar sesión</button>
 
       {errors.general && <p className="text-red-500">{errors.general}</p>}
       {success && <p className="text-green-600">{success}</p>}
@@ -78,4 +57,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default LoginPage;
