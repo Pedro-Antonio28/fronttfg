@@ -14,7 +14,7 @@ const HomePage = () => {
     else setGreeting('Buenas noches');
   }, []);
   return (
-      <Layout showFooter={false}>
+      <Layout showFooter={false} isTeacher={false} isStudent={false} isDirector={false}>
         <h2>Antonio cabron {conut} veces</h2>
         <button onClick={()=>setconut(conut+1)}>+</button>
       </Layout>
