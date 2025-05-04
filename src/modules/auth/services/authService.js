@@ -12,3 +12,15 @@ export const register = async ({ name, email, password, password_confirmation })
 
   return response.data;
 };
+
+export const login = async ({ email, password }) => {
+  const response = await axios.post('/login', {
+    email,
+    password
+  });
+
+  localStorage.setItem('student_token', response.data.token);
+
+  return response.data;
+};
+
