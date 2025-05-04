@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import { ThemeProvider } from '../contexts/themeContext';
 
 const Layout = ({children, showFooter = true} ) => {
     useEffect(() => {
@@ -13,6 +14,7 @@ const Layout = ({children, showFooter = true} ) => {
       }, [])
     return (
         <div className="min-h-screen flex flex-col px-4">
+            <ThemeProvider>
             <Header />
             <main className="min-h-[600px] bg-[#F6D8AE] rounded-lg  shadow-sm p-4">
                 {children}
@@ -20,6 +22,7 @@ const Layout = ({children, showFooter = true} ) => {
             {showFooter && (
                 <Footer />
             )}
+            </ThemeProvider>
         </div>
     );
 };
