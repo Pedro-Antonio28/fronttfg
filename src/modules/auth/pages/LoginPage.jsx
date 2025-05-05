@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Mail, Lock } from 'lucide-react';
 import logo from '@/shared/assets/images/logo.png';
 import { login } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -24,6 +26,7 @@ const LoginPage = () => {
         try {
             const res = await login(formData); // 👈 llama al login del estudiante
             setSuccess('Inicio de sesión exitoso');
+            navigate('/students/dashboard');
         } catch (err) {
             if (err.response?.status === 422) {
                 setErrors(err.response.data.errors || {});
