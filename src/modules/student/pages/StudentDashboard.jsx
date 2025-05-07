@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { fetchDashboard } from '../services/studentService';
+import Layout from '../../../shared/components/Layout';
+import ClassesGrid from '../components/ClassesGrid';
+
 
 const StudentDashboard = () => {
   const [classes, setClasses] = useState([]);
@@ -29,7 +32,16 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <Layout isStudent={true}>
+       <div className="container mx-auto p-4 md:p-6 lg:p-8">
+        <div className="mb-8 flex flex-col gap-2">
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Mis Clases</h1>
+          <p className="text-muted-foreground">Bienvenido de vuelta. Aquí están todas tus clases actuales.</p>
+        </div>
+
+        <ClassesGrid classes={classes} />
+      </div>
+      {/* <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-purple-700">Tus clases</h1>
 
       {classes.length === 0 ? (
@@ -53,7 +65,8 @@ const StudentDashboard = () => {
           ))}
         </ul>
       )}
-    </div>
+    </div> */}
+    </Layout>
   );
 };
 
