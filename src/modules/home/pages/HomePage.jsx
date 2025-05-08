@@ -5,7 +5,6 @@ import Layout from "../../../shared/components/Layout.jsx";
 
 const HomePage = () => {
     const [greeting, setGreeting] = useState('');
-    const [conut, setconut] = useState(0)
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 7) setGreeting('Buenas noches');
@@ -15,8 +14,7 @@ const HomePage = () => {
   }, []);
   return (
       <Layout showFooter={false} isTeacher={false} isStudent={false} isDirector={false}>
-        <h2>Antonio cabron {conut} veces</h2>
-        <button onClick={()=>setconut(conut+1)}>+</button>
+
       </Layout>
   );
 };

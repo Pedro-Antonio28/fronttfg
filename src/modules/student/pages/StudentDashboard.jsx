@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchDashboard } from '../services/studentService';
 import Layout from '../../../shared/components/Layout';
-import ClassesGrid from '../components/ClassesGrid';
+import ClassesGrid from '../../../shared/components/ClassesGrid.jsx';
 
 
 const StudentDashboard = () => {
