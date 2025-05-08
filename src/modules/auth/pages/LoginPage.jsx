@@ -3,6 +3,7 @@ import { Mail, Lock } from 'lucide-react';
 import logo from '@/shared/assets/images/logo.png';
 import { login } from '../services/authService';
 import {Link, useNavigate} from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -58,61 +59,73 @@ const LoginPage = () => {
                     className="absolute top-1/3 right-1/4 w-72 h-72 rounded-full bg-purple-300 opacity-10 blur-2xl"></div>
             </div>
 
-            <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md z-2">
-                <div className="flex justify-center mb-6 -mt-12">
-                    <img src={logo} alt="Ludus logo" className="w-50 h-auto"/>
+            <motion.div
+                initial={{opacity: 0, y: 50}}
+                animate={{opacity: 1, y: 0}}
+                transition={{duration: 0.6}}
+                className="bg-white rounded-xl p-8 w-full max-w-md z-10 mx-4"
+            >
+                <div className="bg-white p-8 w-full max-w-md z-2">
+                    <div className="flex justify-center mb-6 -mt-12">
+                        <img src={logo} alt="Ludus logo" className="w-50 h-auto"/>
+                    </div>
+
+                    <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">Iniciar sesión</h2>
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <InputField
+                            icon={<Mail/>}
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="Correo electrónico"
+                            required
+                            error={errors.email}
+                        />
+                        <InputField
+                            icon={<Lock/>}
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Contraseña"
+                            required
+                            error={errors.password}
+                        />
+
+                        {errors.general && <p className="text-red-500 text-sm">{errors.general}</p>}
+                        {success && <p className="text-green-600 text-sm">{success}</p>}
+
+                        <button
+                            type="submit"
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition"
+                        >
+                            Iniciar sesión
+                        </button>
+                    </form>
+                    <div className="mt-6 text-center text-sm text-gray-600">
+                        ¿No tienes cuenta?{' '}
+                        <Link
+                            to="/register"
+                            className="text-purple-600 hover:text-purple-800 font-medium transition"
+                        >
+                            Registrate aquí
+                        </Link>
+                    </div>
                 </div>
-                <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">Iniciar sesión</h2>
-
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    <InputField
-                        icon={<Mail/>}
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="Correo electrónico"
-                        required
-                        error={errors.email}
-                    />
-                    <InputField
-                        icon={<Lock/>}
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Contraseña"
-                        required
-                        error={errors.password}
-                    />
-
-                    {errors.general && <p className="text-red-500 text-sm">{errors.general}</p>}
-                    {success && <p className="text-green-600 text-sm">{success}</p>}
-
-                    <button
-                        type="submit"
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition"
-                    >
-                        Iniciar sesión
-                    </button>
-                </form>
-                <div className="mt-6 text-center text-sm text-gray-600">
-                    ¿No tienes cuenta?{' '}
-                    <Link
-                        to="/register"
-                        className="text-purple-600 hover:text-purple-800 font-medium transition"
-                    >
-                        Registrate aquí
-                    </Link>
-                </div>
-            </div>
+            </motion.div>
         </div>
 
-    );
+);
 };
 
 
-const InputField = ({icon, error, ...props}) => (
+const InputField = ({
+    icon, error,
+...
+    props
+}) => (
     <div className="relative">
         <div className="absolute left-3 top-3 text-purple-400">{icon}</div>
         <input
