@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import logo from '../../shared/assets/images/logo.png'; // Asegúrate de que la ruta sea correcta
+import logo_blanco from '../../shared/assets/images/logo_blanco.png'; // Asegúrate de que la ruta sea correcta
 
 const Header = ({ isDirector, isTeacher, isStudent }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,11 +60,20 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
                   className="flex-shrink-0"
               >
                 <a href="#" className="flex items-center">
-                  <img
-                      src={logo}
-                      alt="Logo LUDUS"
-                      className="h-50 w-auto " // Ajusta la altura según necesites
-                  />
+                <>
+              {/* Logo para modo claro */}
+                <img
+                src={logo}
+                alt="Logo LUDUS claro"
+                className="h-50 w-auto block dark:hidden"
+                />
+              {/* Logo para modo oscuro */}
+                <img
+                src={logo_blanco}
+                alt="Logo LUDUS oscuro"
+                className="h-50 w-auto hidden dark:block"
+                />
+                </>
                 </a>
               </motion.div>
             </div>

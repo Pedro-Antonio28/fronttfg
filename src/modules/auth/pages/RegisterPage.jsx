@@ -3,8 +3,10 @@ import { motion } from 'motion/react';
 import { Mail, Lock } from 'lucide-react';
 import logo from '@/shared/assets/images/logo.png';
 import { register } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -27,6 +29,7 @@ const RegisterPage = () => {
         try {
             const res = await register(formData); // Este ya inserta en la tabla students
             setSuccess('Usuario registrado correctamente');
+            navigate('/students/dashboard');
         } catch (err) {
             if (err.response?.status === 422) {
                 setErrors(err.response.data.errors || {});
