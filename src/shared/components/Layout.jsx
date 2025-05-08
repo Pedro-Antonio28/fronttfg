@@ -23,7 +23,7 @@ const Layout = ({ children, showFooter = true, isDirector = false, isTeacher = f
                     isStudent={isStudent}
                 />
 
-                <main className="min-h-[660px] bg-[#F6D8AE] rounded-lg shadow-sm p-4">
+                <main className="min-h-[660px] bg-gray-200 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-4">
                     {children}
                 </main>
 
