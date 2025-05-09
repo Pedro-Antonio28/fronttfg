@@ -10,30 +10,42 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data } = await axios.get('/user');
-        setUser(data);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUser = async () => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+      setLoading(false);
+      return;
+    }
 
-    fetchUser();
-  }, []);
+    try {
+      const { data } = await axios.get('/user');
+      setUser(data);
+      localStorage.setItem('user', JSON.stringify(data));
+    } catch {
+      setUser(null);
+      localStorage.removeItem('user');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchUser();
+}, []);
 
   const login = async (credentials, role = 'student') => {
-    const { data } = await axios.post(`/login/${role}`, credentials);
+    const { data } = await axios.post(`/${role}/login`, credentials);
     localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify({ ...data.user, role }));
     setUser({ ...data.user, role });
+    console.log(data)
     return data;
   };
 
   const register = async (credentials, role = 'student') => {
-    const { data } = await axios.post(`/register/${role}`, credentials);
+    const { data } = await axios.post(`/${role}/register`, credentials);
     localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify({ ...data.user, role }));
     setUser({ ...data.user, role });
     return data;
   };
@@ -43,6 +55,7 @@ export const AuthProvider = ({ children }) => {
       await axios.post('/logout');
     } catch {}
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
     navigate('/');
   };
