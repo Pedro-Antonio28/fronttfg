@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Mail, Lock } from 'lucide-react';
 import logo from '@/shared/assets/images/logo.png';
-import { login } from '../services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import {Link, useNavigate} from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -25,7 +26,7 @@ const LoginPage = () => {
         setErrors({});
         setSuccess('');
         try {
-            const res = await login(formData); // 👈 llama al login del estudiante
+            await login(formData, 'student');
             setSuccess('Inicio de sesión exitoso');
             navigate('/students/dashboard');
         } catch (err) {

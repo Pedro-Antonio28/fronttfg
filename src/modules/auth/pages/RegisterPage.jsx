@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import logo from '@/shared/assets/images/logo.png';
-import { register } from '../services/authService';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
 const RegisterPage = () => {
     const navigate = useNavigate();
+    const { register } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -27,7 +28,7 @@ const RegisterPage = () => {
         setErrors({});
         setSuccess('');
         try {
-            const res = await register(formData);
+            await register(formData, 'student');
             setSuccess('Usuario registrado correctamente');
             navigate('/students/dashboard');
         } catch (err) {

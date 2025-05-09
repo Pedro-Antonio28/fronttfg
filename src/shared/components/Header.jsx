@@ -4,48 +4,38 @@ import { Menu, X } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import logo from '../../shared/assets/images/logo.png'; // Asegúrate de que la ruta sea correcta
 import logo_blanco from '../../shared/assets/images/logo_blanco.png'; // Asegúrate de que la ruta sea correcta
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/authContext';
 
 const Header = ({ isDirector, isTeacher, isStudent }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const isLoggedIn = isDirector || isTeacher || isStudent;
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { user, logout } = useAuth();
+  const isLoggedIn = !!user;
+  const role = user?.role;
 
   // Configuración por rol
   const roleConfig = {
-    director: {
-      buttons: [
-        { name: "Bandeja", href: "/inbox" },
-        { name: "Almacén", href: "/storage" }
-      ]
-    },
-    teacher: {
-      buttons: [
-        { name: "Bandeja", href: "/inbox" },
-        { name: "Almacén", href: "/storage" },
-        { name: "Nueva Clase", href: "/new-classroom" }
-      ]
-    },
-    student: {
-      buttons: [
-        { name: "Bandeja", href: "/inbox" },
-        { name: "Unirse a Clase", href: "/join-classroom" }
-      ]
-    },
-    guest: {
-      buttons: [
-        { name: "Iniciar Sesión", href: "/login" },
-        { name: "Registrarse", href: "/register" }
-      ]
-    }
+    director: [
+      { name: "Bandeja", href: "/inbox" },
+      { name: "Almacén", href: "/storage" },
+    ],
+    teacher: [
+      { name: "Bandeja", href: "/inbox" },
+      { name: "Almacén", href: "/storage" },
+      { name: "Nueva Clase", href: "/new-classroom" }
+    ],
+    student: [
+      { name: "Bandeja", href: "/inbox" },
+      { name: "Unirse a Clase", href: "/join-classroom" }
+    ],
+    guest: [
+      { name: "Iniciar Sesión", href: "/login" },
+      { name: "Registrarse", href: "/register" }
+    ]
   };
 
-  const getRoleConfig = () => {
-    if (isDirector) return roleConfig.director;
-    if (isTeacher) return roleConfig.teacher;
-    if (isStudent) return roleConfig.student;
-    return roleConfig.guest;
-  };
-
-  const { buttons } = getRoleConfig();
+  const buttons = roleConfig[role] || roleConfig.guest;
 
   return (
       <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800">
@@ -53,13 +43,8 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
           <div className="flex justify-between items-center h-16">
             {/* Logo con imagen */}
             <div className="flex items-center">
-              <motion.div
-                  initial={{opacity: 0, x: -20}}
-                  animate={{opacity: 1, x: 0}}
-                  transition={{duration: 0.5}}
-                  className="flex-shrink-0"
-              >
-                <a href="#" className="flex items-center">
+              <div className="flex-shrink-0">
+                <Link to="/" className="flex items-center">
                 <>
               {/* Logo para modo claro */}
                 <img
@@ -74,8 +59,8 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
                 className="h-50 w-auto hidden dark:block"
                 />
                 </>
-                </a>
-              </motion.div>
+                </Link>
+              </div>
             </div>
 
             {/* Contenedor derecho */}
@@ -103,13 +88,28 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
 
               {/* Avatar (solo para usuarios logueados) */}
               {isLoggedIn && (
-                  <div className="hidden md:block ml-2">
-                    <div
-                        className="h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-medium">
-
-                    </div>
-                  </div>
-              )}
+  <div className="relative hidden md:block ml-2">
+    <button
+      onClick={() => setShowDropdown(!showDropdown)}
+      className="h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-medium focus:outline-none"
+    >
+      👤
+    </button>
+    {showDropdown && (
+      <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow z-50">
+        <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">Mi perfil</a>
+        <button
+          onClick={() => {
+            logout();
+          }}          
+          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+        >
+          Cerrar sesión
+        </button>
+      </div>
+    )}
+  </div>
+)}
 
               {/* Menú móvil (trigger) */}
               <div className="md:hidden flex items-center">
@@ -134,17 +134,7 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
                 className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800"
             >
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                {isLoggedIn && (
-                    <div className="flex justify-center py-2">
-                      <div
-                          className="h-12 w-12 rounded-full flex items-center justify-center text-white text-xl font-medium mb-2">
-
-                      </div>
-                    </div>
-                )}
-
                 <div className="pt-2 pb-3">
-                  <ThemeToggle />
                   {buttons.map((button, index) => (
                       <a
                           key={index}
@@ -161,6 +151,24 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
                       </a>
                   ))}
                 </div>
+                {isLoggedIn && (
+  <>
+    <a
+      href="/profile"
+      className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+    >
+      Mi perfil
+    </a>
+    <button
+      onClick={() => {
+        logout();
+      }}      
+      className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:cursor-pointer"
+    >
+      Cerrar sesión
+    </button>
+  </>
+)}
               </div>
             </motion.div>
         )}
