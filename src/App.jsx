@@ -1,7 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './modules/home/pages/HomePage';
-import RegisterPage from './modules/auth/pages/RegisterPage';
-import LoginPage from './modules/auth/pages/LoginPage';
 import StudentDashboard from './modules/student/pages/StudentDashboard';
 import StudentRegister from './modules/student/pages/StudentRegister';
 import StudentLogin from './modules/student/pages/StudentLogin';
