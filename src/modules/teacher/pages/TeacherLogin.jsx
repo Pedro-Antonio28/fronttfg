@@ -4,7 +4,8 @@ const TeacherLogin = () => (
   <LoginBase
     role="teacher"
     redirectTo="/teacher/dashboard"
-    registerLink="/teacher/login"
+    registerLink="/teacher/register"
+    rol="Profesor"
   />
 );
 

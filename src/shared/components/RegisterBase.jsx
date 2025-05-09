@@ -5,7 +5,7 @@ import logo from '@/shared/assets/images/logo.png';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/shared/contexts/AuthContext';
 
-const RegisterBase = ({ role, redirectTo, loginRoute }) => {
+const RegisterBase = ({ role, redirectTo, loginRoute, rol }) => {
   const navigate = useNavigate();
   const { register } = useAuth();
   const [formData, setFormData] = useState({
@@ -65,7 +65,7 @@ const RegisterBase = ({ role, redirectTo, loginRoute }) => {
         <div className="flex justify-center mb-6">
           <img src={logo} alt="Ludus logo" className="w-40 h-auto" />
         </div>
-
+        <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">Bienvenido {rol}</h2>
         <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">Crear cuenta</h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">

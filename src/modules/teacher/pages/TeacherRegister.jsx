@@ -1,7 +1,7 @@
 import RegisterBase from '@/shared/components/RegisterBase';
 
 const TeacherRegister = () => (
-  <RegisterBase role="teacher" redirectTo="/teacher/dashboard" loginRoute="/login/teacher" />
+  <RegisterBase role="teacher" redirectTo="/teacher/dashboard" loginRoute="/teacher/login" rol="Profesor" />
 );
 
 export default TeacherRegister;

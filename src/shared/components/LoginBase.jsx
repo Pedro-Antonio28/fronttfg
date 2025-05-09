@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
-const LoginBase = ({ role, redirectTo, registerLink }) => {
+const LoginBase = ({ role, redirectTo, registerLink, rol }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -45,8 +45,9 @@ const LoginBase = ({ role, redirectTo, registerLink }) => {
         className="bg-white rounded-xl p-8 w-full max-w-md z-10 mx-4"
       >
         <div className="flex justify-center mb-6 -mt-12">
-          <img src={logo} alt="Ludus logo" className="w-50 h-auto" />
+          <img src={logo} alt="Ludus logo" className="w-40 h-auto" />
         </div>
+        <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">Bienvenido {rol}</h2>
         <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">Iniciar sesión</h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
