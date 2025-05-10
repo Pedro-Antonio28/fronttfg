@@ -2,7 +2,7 @@ import axios from '@/shared/functions/axiosConfig';
 
 export const fetchDashboard = async () => {
   try {
-    const response = await axios.get('/teachers/dashboard');
+    const response = await axios.get('/teacher/dashboard');
     console.log(response.data.data)
     return response.data.data; // solo retornamos la lista de clases
   } catch (error) {
