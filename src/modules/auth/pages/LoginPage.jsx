@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock } from 'lucide-react';
 import logo from '@/shared/assets/images/logo.png';
 import { login } from '../services/authService';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: ''
-    });
-
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState('');
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        const name = params.get('name');
+        const email = params.get('email');
+
+        if (token) {
+            localStorage.setItem('student_token', token);
+            localStorage.setItem('student_name', name || '');
+            localStorage.setItem('student_email', email || '');
+            navigate('/google-success');
+
+        }
+    }, [location, navigate]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,7 +37,7 @@ const LoginPage = () => {
         setErrors({});
         setSuccess('');
         try {
-            const res = await login(formData); // 👈 llama al login del estudiante
+            const res = await login(formData);
             setSuccess('Inicio de sesión exitoso');
         } catch (err) {
             if (err.response?.status === 422) {
@@ -33,13 +48,13 @@ const LoginPage = () => {
         }
     };
 
+    const handleGoogleLogin = () => {
+        window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google/redirect`;
+    };
+
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-white overflow-hidden">
-
-            {/* ✅ Fondo decorativo con líneas diagonales moradas */}
-            <div className="absolute inset-0 -z-10 bg-[repeating-linear-gradient(135deg,_#c084fc_0px,_#c084fc_2px,_transparent_2px,_transparent_20px)] opacity-20"></div>
-
-            {/* 🎯 Formulario */}
+            <div className="absolute inset-0 -z-10 bg-[repeating-linear-gradient(135deg,_#c084fc_0px,_#c084fc_2px,_transparent_2px,_transparent_20px)] opacity-20" />
             <div className="bg-white shadow-xl rounded-xl p-10 w-full max-w-md z-10">
                 <div className="flex justify-center mb-6">
                     <img src={logo} alt="Ludus logo" className="w-40 h-auto" />
@@ -78,6 +93,15 @@ const LoginPage = () => {
                         Iniciar sesión
                     </button>
                 </form>
+
+                <div className="mt-6">
+                    <button
+                        onClick={handleGoogleLogin}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition"
+                    >
+                        Iniciar sesión con Google
+                    </button>
+                </div>
             </div>
         </div>
     );
