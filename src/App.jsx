@@ -7,6 +7,9 @@ import TeacherRegister from './modules/teacher/pages/TeacherRegister';
 import TeacherLogin from './modules/teacher/pages/TeacherLogin';
 import TeacherDashboard from './modules/teacher/pages/TeacherDashboard';
 import ProtectedRoute from './shared/components/ProtectedRoute';
+import StudentClassActivities from './modules/student/pages/StudentClassActivities';
+import ClassLayout from "./shared/components/ClassLayout.jsx";
+
 
 function App() {
   return (
@@ -19,8 +22,24 @@ function App() {
       <Route path="/teacher/register" element={<TeacherRegister />} />
       <Route path="/teacher/login" element={<TeacherLogin />} />
       <Route path="/teacher/dashboard" element={<ProtectedRoute role="teacher"><TeacherDashboard/></ProtectedRoute>} />
+
+        <Route
+            path="/student/class/:classId"
+            element={
+                <ProtectedRoute role="student">
+                    <ClassLayout />
+                </ProtectedRoute>
+            }
+        />
+
+
+
+
+
     </Routes>
   )
+
+
 }
 
 export default App

@@ -100,62 +100,75 @@ export default function ClassCard({ classItem, index }) {
   }
 
   return (
-    <motion.div
-      variants={item}
-      whileHover={{
-        y: -5,
-        transition: { duration: 0.2 },
-      }}
-    >
-      <Card className="overflow-hidden bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-        <CardHeader className="p-0">
-          <motion.div
-            className="h-24 w-full bg-gradient-to-r from-purple-500 to-purple-700 dark:from-purple-700 dark:to-purple-900"
-            style={{
-              backgroundImage: classItem.backgroundImage
-                ? `linear-gradient(rgba(109, 40, 217, 0.8), rgba(109, 40, 217, 0.8)), url(${classItem.backgroundImage})`
-                : undefined,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+      <motion.div
+          variants={item}
+          whileHover={{
+            y: -5,
+            transition: { duration: 0.2 },
+          }}
+      >
+        <div
+            className="block cursor-pointer"
+            onClick={() => {
+              localStorage.setItem("selectedClassName", classItem.class_name);
+              document.title = classItem.class_name;
+              window.location.href = `/student/class/${classItem.id}`;
+
+
             }}
-            whileHover={{
-              backgroundPosition: "center 45%",
-              transition: { duration: 3 },
-            }}
-          />
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <motion.div
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 + index * 0.1 }}
-            >
-              <Avatar className="h-16 w-16 border-4 border-white -mt-12 shadow-sm">
-                <AvatarImage src={classItem.teacherImage || imagenPrueba} alt="profesor" />
-                <AvatarFallback className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200">
-                  {getInitials("Jose Luis Torrente")}
-                </AvatarFallback>
-              </Avatar>
-            </motion.div>
-            <div className="flex-1 pt-1">
-              <h3 className="font-semibold text-lg">{classItem.class_name}</h3>
-              <p className="text-sm text-muted-foreground">Prof. Jose Luis Torrente</p>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="bg-slate-50 dark:bg-slate-800 px-6 py-3">
-          <motion.div className="ml-auto" whileHover={{ x: 3 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant="ghost"
-              className="flex items-center gap-1 text-xs text-purple-700 hover:cursor-pointer hover:bg-purple-50 hover:text-purple-800 dark:hover:bg-slate-700 dark:hover:text-purple-300"
-            >
-              Ver detalles
-              <ChevronRight className="h-3 w-3" />
-            </Button>
-          </motion.div>
-        </CardFooter>
-      </Card>
-    </motion.div>
-  )
+
+
+        >
+          <Card className="overflow-hidden bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+            <CardHeader className="p-0">
+              <motion.div
+                  className="h-24 w-full bg-gradient-to-r from-purple-500 to-purple-700 dark:from-purple-700 dark:to-purple-900"
+                  style={{
+                    backgroundImage: classItem.backgroundImage
+                        ? `linear-gradient(rgba(109, 40, 217, 0.8), rgba(109, 40, 217, 0.8)), url(${classItem.backgroundImage})`
+                        : undefined,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  whileHover={{
+                    backgroundPosition: "center 45%",
+                    transition: { duration: 3 },
+                  }}
+              />
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <motion.div
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
+                >
+                  <Avatar className="h-16 w-16 border-4 border-white -mt-12 shadow-sm">
+                    <AvatarImage src={classItem.teacherImage || imagenPrueba} alt="profesor" />
+                    <AvatarFallback className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200">
+                      {getInitials("Jose Luis Torrente")}
+                    </AvatarFallback>
+                  </Avatar>
+                </motion.div>
+                <div className="flex-1 pt-1">
+                  <h3 className="font-semibold text-lg">{classItem.class_name}</h3>
+                  <p className="text-sm text-muted-foreground">Prof. Jose Luis Torrente</p>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="bg-slate-50 dark:bg-slate-800 px-6 py-3">
+              <motion.div className="ml-auto" whileHover={{ x: 3 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                    variant="ghost"
+                    className="flex items-center gap-1 text-xs text-purple-700 hover:cursor-pointer hover:bg-purple-50 hover:text-purple-800 dark:hover:bg-slate-700 dark:hover:text-purple-300"
+                >
+                  Ver detalles
+                  <ChevronRight className="h-3 w-3" />
+                </Button>
+              </motion.div>
+            </CardFooter>
+          </Card>
+        </div>
+      </motion.div>
+  );
 }
