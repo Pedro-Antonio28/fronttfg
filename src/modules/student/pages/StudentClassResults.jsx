@@ -8,10 +8,10 @@ const examData = [
   { id: 2, nombre: "Examen 2: Conceptos básicos", nota: 7, fecha: "17 Mar", tiempo: 32 },
   { id: 3, nombre: "Examen 3: Aplicación práctica", nota: 5, fecha: "24 Mar", tiempo: 28 },
   { id: 4, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
-  { id: 4, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
-    { id: 4, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
-    { id: 4, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
-    { id: 4, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
+  { id: 5, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
+  { id: 6, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
+  { id: 7, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
+  { id: 8, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
 ]
 
 // Datos formateados para el gráfico
@@ -54,7 +54,7 @@ const StudentClassResults = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6"
+        className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-6"
       >
         {/* Columna izquierda: Nota media y lista de exámenes */}
         <motion.div variants={itemVariants} className="lg:col-span-1 space-y-4">
