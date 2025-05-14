@@ -6,6 +6,7 @@ import logo from '../../shared/assets/images/logo.png'; // Asegúrate de que la 
 import logo_blanco from '../../shared/assets/images/logo_blanco.png'; // Asegúrate de que la ruta sea correcta
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
+import StudentProfile from "../../modules/student/pages/StudentProfile.jsx";
 
 const Header = ({ isDirector, isTeacher, isStudent }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,7 +99,12 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
     </button>
     {showDropdown && (
       <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow z-50">
-        <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">Mi perfil</a>
+        <Link
+            to="/profile"
+            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+        >
+          Mi perfil
+        </Link>
         <button
           onClick={() => {
             logout();
@@ -154,12 +160,13 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
                 </div>
                 {isLoggedIn && (
   <>
-    <a
-      href="/profile"
-      className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+    <Link
+        to="/profile"
+        className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
     >
       Mi perfil
-    </a>
+    </Link>
+
     <button
       onClick={() => {
         logout();
