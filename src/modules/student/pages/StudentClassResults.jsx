@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "motion/react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { Clock, Award, TrendingUp } from "lucide-react"
+import { useClass } from "../services/ClassContext"
 
 const examData = [
   { id: 1, nombre: "Examen 1: Introducción", nota: 5, fecha: "10 Mar", tiempo: 25 },
@@ -14,20 +15,38 @@ const examData = [
   { id: 8, nombre: "Examen 4: Casos de estudio", nota: 8, fecha: "31 Mar", tiempo: 35 },
 ]
 
-// Datos formateados para el gráfico
-const chartData = examData.map((exam) => ({
+const StudentClassResults = () => {
+  const [selectedExam, setSelectedExam] = useState(null)
+  const {
+    results,
+    fetchResults,
+    loadingResults
+  } = useClass();
+
+  useEffect(() => {
+    if (results.length === 0) {
+      fetchResults();
+    }else{
+      console.log(results)
+    }
+  }, []);
+
+  if (loadingResults) {
+    return <p className="text-center py-6">Cargando resultados...</p>;
+  }
+
+  if (results.length === 0) {
+    return <p className="text-center py-6">No hay resultados aún.</p>;
+  }
+
+  const chartData = results.map((exam) => ({
   name: `Examen ${exam.id}`,
   nota: exam.nota,
-}))
+  }));
 
-// Calcular la nota media
-const notaMedia = (examData.reduce((sum, exam) => sum + exam.nota, 0) / examData.length).toFixed(1)
+  const notaMedia = (results.reduce((sum, exam) => sum + exam.nota, 0) / results.length).toFixed(1);
 
-// Calcular el tiempo medio
-const tiempoMedio = Math.round(examData.reduce((sum, exam) => sum + exam.tiempo, 0) / examData.length)
-
-const StudentClassResults = () => {
-    const [selectedExam, setSelectedExam] = useState(null)
+  const tiempoMedio = Math.round(results.reduce((sum, exam) => sum + exam.tiempo, 0) / results.length);
 
     const containerVariants = {
     hidden: { opacity: 0 },
@@ -87,7 +106,7 @@ const StudentClassResults = () => {
             <h2 className="text-lg text-purple-700 dark:text-purple-300 mb-4 font-medium">Últimos Exámenes</h2>
             <div className="space-y-3 max-h-[290px] overflow-y-auto">
                 <div className="flex flex-col gap-4 scroll-x-hidden" style={{ scrollBehavior: "smooth" }}>
-              {examData.map((exam) => (
+              {results.map((exam) => (
                 <motion.div
                   key={exam.id}
                   whileHover={{ x: 5, backgroundColor: "rgba(139, 92, 246, 0.1)" }}
@@ -178,7 +197,7 @@ const StudentClassResults = () => {
                 whileHover={{ scale: 1.05 }}
                 className="bg-gray-100 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 rounded-lg p-4 flex-1 border"
               >
-                <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{examData.length}</div>
+                <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{results.length}</div>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Exámenes completados</p>
               </motion.div>
 
@@ -187,7 +206,7 @@ const StudentClassResults = () => {
                 className="bg-gray-100 dark:bg-gray-700/50 border-gray-200 dark:border-gray-700 rounded-lg p-4 flex-1 border"
               >
                 <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                  {Math.max(...examData.map((e) => e.nota))}
+                  {Math.max(...results.map((e) => e.nota))}
                 </div>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Nota más alta</p>
               </motion.div>
