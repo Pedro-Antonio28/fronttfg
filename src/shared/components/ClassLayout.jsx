@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import Layout from "./Layout";
+import { Routes, Route, useParams, Outlet, NavLink } from "react-router-dom";
 import {
     BookOpen,
     FileText,
@@ -8,17 +9,8 @@ import {
     Users,
     MessageSquare,
 } from "lucide-react";
-
-const navItems = [
-    { label: "Actividades", path: "activities", icon: FileText },
-    { label: "Resultados", path: "results", icon: BarChart },
-    { label: "Participantes", path: "members", icon: Users },
-    { label: "Chat", path: "chat", icon: MessageSquare },
-];
-
-const ClassLayout = ({ children }) => {
-    const { classId } = useParams();
-    const location = useLocation();
+import { ClassProvider } from "../../modules/student/services/ClassContext";
+const ClassLayout = ({ className: passedClassName }) => {
 
     const [className, setClassName] = useState(() => {
         return localStorage.getItem("selectedClassName") || "Clase";
@@ -31,7 +23,8 @@ const ClassLayout = ({ children }) => {
     }, [className]);
 
     return (
-        <Layout isStudent>
+        <Layout>
+            <ClassProvider>
             <div className="rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow">
                 {/* Encabezado */}
                 <div className="bg-white dark:bg-gray-800 py-4 pl-6 pr-4 md:pl-8 md:pr-6 lg:pl-8 lg:pr-6">
@@ -54,35 +47,34 @@ const ClassLayout = ({ children }) => {
                     {/* Sidebar */}
                     <aside className="w-full md:w-64 p-6 bg-white dark:bg-gray-800">
                         <nav className="flex flex-col gap-3">
-                            {navItems.map(({ label, path, icon: Icon }) => {
-                                const isActive = location.pathname.includes(path);
-
-                                return (
-                                    <a
-                                        key={path}
-                                        href={`/student/class/${classId}/${path}`}
-                                        className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition transform duration-200 ease-in-out shadow-sm
-                      ${isActive
-                                            ? "bg-purple-600 text-white scale-[1.05] shadow-md"
-                                            : "bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-100 dark:hover:bg-purple-800"
-                                        }`}
-                                    >
-                                        <Icon className="h-5 w-5" />
-                                        {label}
-                                    </a>
-                                );
-                            })}
+                            {navItems.map(({ label, icon: Icon, value }) => (
+    <NavLink
+        key={value}
+        to={value}
+        className={({ isActive }) => `
+            flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition
+            ${isActive
+                ? "bg-purple-600 text-white scale-[1.05] shadow-md"
+                : "bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-100 dark:hover:bg-purple-800"
+            }
+        `}
+    >
+        <Icon className="h-5 w-5" />
+        {label}
+    </NavLink>
+))}
                         </nav>
                     </aside>
 
                     {/* Contenido dinámico */}
                     <main className="flex-1 p-6 md:p-8 bg-purple-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                         <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
-                            {children}
+                            <Outlet />
                         </div>
                     </main>
                 </div>
             </div>
+            </ClassProvider>
         </Layout>
     );
 };

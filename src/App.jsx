@@ -24,30 +24,12 @@ function App() {
       <Route path="/teacher/register" element={<TeacherRegister />} />
       <Route path="/teacher/login" element={<TeacherLogin />} />
       <Route path="/teacher/dashboard" element={<ProtectedRoute role="teacher"><TeacherDashboard/></ProtectedRoute>} />
-
-        <Route
-            path="/student/class/activities"
-            element={<ProtectedRoute role="student"><StudentClassActivities /></ProtectedRoute>}
-        />
-
-        <Route
-            path="/student/class/:classId/results"
-            element={<ProtectedRoute role="student"><StudentClassResults /></ProtectedRoute>}
-        />
-        <Route
-            path="/student/class/:classId/members"
-            element={<ProtectedRoute role="student"><StudentClassMembers /></ProtectedRoute>}
-        />
-        <Route
-            path="/student/class/:classId/chat"
-            element={<ProtectedRoute role="student"><StudentClassChat /></ProtectedRoute>}
-        />
-
-
-
-
-
-
+      <Route path="/student/class/:classId" element={<ClassLayout />}>
+        <Route path="activities" element={<StudentClassActivities />} />
+        <Route path="results" element={<StudentClassResults />} />
+        <Route path="members" element={<StudentClassMembers />} />
+        <Route path="chat" element={<StudentClassChat />} />
+      </Route>
     </Routes>
   )
 
