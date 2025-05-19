@@ -105,3 +105,12 @@ body {
       --foreground: 210 40% 98%;
     }
   }
+
+  .scroll-x-hidden {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.scroll-x-hidden::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
