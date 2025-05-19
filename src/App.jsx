@@ -12,12 +12,14 @@ import ClassLayout from "./shared/components/ClassLayout.jsx";
 import StudentClassResults from './modules/student/pages/StudentClassResults.jsx';
 import StudentClassMembers from './modules/student/pages/StudentClassMembers.jsx';
 import StudentClassChat from './modules/student/pages/StudentClassChat.jsx';
+import JoinClass from './modules/student/pages/JoinClass.jsx';
 
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/student/join-class" element={<JoinClass />} />
       <Route path="/student/register" element={<StudentRegister />} />
       <Route path="/student/login" element={<StudentLogin />} />
       <Route path="/student/dashboard" element={<ProtectedRoute role="student"><StudentDashboard/></ProtectedRoute>} />
