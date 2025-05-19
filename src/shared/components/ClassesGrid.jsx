@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
-import { motion } from "motion/react"
-import ClassCard from "./ClassCard"
+import { motion } from 'motion/react';
+import ClassCard from './ClassCard';
 
 export default function ClassesGrid({ classes }) {
   const container = {
@@ -12,7 +12,7 @@ export default function ClassesGrid({ classes }) {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   return (
     <motion.div
@@ -25,5 +25,5 @@ export default function ClassesGrid({ classes }) {
         <ClassCard key={classItem.id} classItem={classItem} index={index} />
       ))}
     </motion.div>
-  )
+  );
 }
