@@ -34,13 +34,13 @@ export const AuthProvider = ({ children }) => {
 }, []);
 
   const login = async (credentials, role = 'student') => {
-    const { data } = await axios.post(`/${role}/login`, credentials);
+    const { data } = await axios.post(`/${role}/login`, credentials); // token viene aquí
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify({ ...data.user, role }));
     setUser({ ...data.user, role });
-    console.log(data)
     return data;
   };
+
 
   const register = async (credentials, role = 'student') => {
     const { data } = await axios.post(`/${role}/register`, credentials);

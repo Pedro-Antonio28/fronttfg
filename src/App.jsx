@@ -7,9 +7,11 @@ import TeacherRegister from './modules/teacher/pages/TeacherRegister';
 import TeacherLogin from './modules/teacher/pages/TeacherLogin';
 import TeacherDashboard from './modules/teacher/pages/TeacherDashboard';
 import ProtectedRoute from './shared/components/ProtectedRoute';
-import StudentClassActivities from './modules/student/pages/StudentClassActivities';
 import ClassLayout from "./shared/components/ClassLayout.jsx";
-
+import StudentClassActivities from './modules/student/pages/StudentClassActivities';
+import StudentClassResults from './modules/student/pages/StudentClassResults';
+import StudentClassMembers from './modules/student/pages/StudentClassMembers';
+import StudentClassChat from './modules/student/pages/StudentClassChat';
 
 function App() {
   return (
@@ -24,13 +26,23 @@ function App() {
       <Route path="/teacher/dashboard" element={<ProtectedRoute role="teacher"><TeacherDashboard/></ProtectedRoute>} />
 
         <Route
-            path="/student/class/:classId"
-            element={
-                <ProtectedRoute role="student">
-                    <ClassLayout />
-                </ProtectedRoute>
-            }
+            path="/student/class/activities"
+            element={<ProtectedRoute role="student"><StudentClassActivities /></ProtectedRoute>}
         />
+
+        <Route
+            path="/student/class/:classId/results"
+            element={<ProtectedRoute role="student"><StudentClassResults /></ProtectedRoute>}
+        />
+        <Route
+            path="/student/class/:classId/members"
+            element={<ProtectedRoute role="student"><StudentClassMembers /></ProtectedRoute>}
+        />
+        <Route
+            path="/student/class/:classId/chat"
+            element={<ProtectedRoute role="student"><StudentClassChat /></ProtectedRoute>}
+        />
+
 
 
 

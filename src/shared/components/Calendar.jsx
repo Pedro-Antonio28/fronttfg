@@ -15,7 +15,7 @@ const Calendar = ({ examDates }) => {
     const formatDay = (y, m, d) => new Date(y, m, d).toISOString().split("T")[0];
     const getStartDay = (y, m) => {
         const day = new Date(y, m, 1).getDay();
-        return day === 0 ? 6 : day - 1; // lunes como inicio
+        return day === 0 ? 6 : day - 1;
     };
 
     const daysInMonth = getDaysInMonth(year, month);
@@ -24,18 +24,18 @@ const Calendar = ({ examDates }) => {
     const goToPreviousMonth = () => {
         if (month === 0) {
             setMonth(11);
-            setYear((prev) => prev - 1);
+            setYear(prev => prev - 1);
         } else {
-            setMonth((prev) => prev - 1);
+            setMonth(prev => prev - 1);
         }
     };
 
     const goToNextMonth = () => {
         if (month === 11) {
             setMonth(0);
-            setYear((prev) => prev + 1);
+            setYear(prev => prev + 1);
         } else {
-            setMonth((prev) => prev + 1);
+            setMonth(prev => prev + 1);
         }
     };
 
@@ -64,18 +64,26 @@ const Calendar = ({ examDates }) => {
                 {[...Array(daysInMonth)].map((_, i) => {
                     const day = i + 1;
                     const dateStr = formatDay(year, month, day);
-                    const isExam = examDates.includes(dateStr);
+                    const exam = examDates.find(e => e.date === dateStr);
 
                     return (
-                        <div
-                            key={day}
-                            className={`p-1 rounded-full ${
-                                isExam
-                                    ? "bg-purple-600 text-white font-bold"
-                                    : "text-gray-800 dark:text-gray-100"
-                            }`}
-                        >
-                            {day}
+                        <div key={day} className="relative group">
+                            <div
+                                className={`p-1 rounded-full transition-all duration-200 ${
+                                    exam
+                                        ? "bg-purple-600 text-white font-bold hover:scale-105"
+                                        : "text-gray-800 dark:text-gray-100"
+                                }`}
+                            >
+                                {day}
+                            </div>
+
+                            {exam && (
+                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-max max-w-[160px] px-2 py-1 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none z-10 transition-opacity duration-200 bg-gray-900 text-white dark:bg-white dark:text-gray-900">
+                                    {exam.title}
+                                </div>
+                            )}
+
                         </div>
                     );
                 })}

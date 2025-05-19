@@ -112,7 +112,9 @@ export default function ClassCard({ classItem, index }) {
             onClick={() => {
               localStorage.setItem("selectedClassName", classItem.class_name);
               document.title = classItem.class_name;
-              window.location.href = `/student/class/${classItem.id}`;
+              window.location.href = `/student/class/activities?classId=${classItem.id}`;
+
+
 
 
             }}
