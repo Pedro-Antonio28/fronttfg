@@ -146,6 +146,7 @@ const StudentClassActivities = () => {
             })()}
         </>
     );
+
 };
 
 export default StudentClassActivities;
