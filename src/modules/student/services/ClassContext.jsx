@@ -32,6 +32,7 @@ export const ClassProvider = ({ children }) => {
     setLoadingActivities(true);
     try {
       const { data } = await axios.get(`/student/class/${classId}/activities`);
+      console.log(data);
       setActivities(data);
     } catch (error) {
       console.error('Error fetching activities:', error);
