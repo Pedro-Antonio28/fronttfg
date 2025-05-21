@@ -44,7 +44,8 @@ const RegisterBase = ({ role, redirectTo, loginRoute, rol }) => {
       <div className="absolute inset-0 w-full h-full overflow-hidden -z-10">
         {/* Burbujas animadas */}
         {[...Array(10)].map((_, i) => (
-          <div key={i}
+          <div
+            key={i}
             className="absolute rounded-full bg-purple-300 opacity-20 blur-3xl"
             style={{
               width: `${50 + Math.random() * 80}px`,

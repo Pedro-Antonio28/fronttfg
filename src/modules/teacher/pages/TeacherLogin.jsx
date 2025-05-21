@@ -1,4 +1,4 @@
-import LoginBase from "@/shared/components/LoginBase";
+import LoginBase from '@/shared/components/LoginBase';
 
 const TeacherLogin = () => (
   <LoginBase

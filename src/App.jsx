@@ -8,11 +8,10 @@ import TeacherLogin from './modules/teacher/pages/TeacherLogin';
 import TeacherDashboard from './modules/teacher/pages/TeacherDashboard';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import StudentClassActivities from './modules/student/pages/StudentClassActivities';
-import ClassLayout from "./shared/components/ClassLayout.jsx";
+import ClassLayout from './shared/components/ClassLayout.jsx';
 import StudentClassResults from './modules/student/pages/StudentClassResults.jsx';
 import StudentClassMembers from './modules/student/pages/StudentClassMembers.jsx';
 import StudentClassChat from './modules/student/pages/StudentClassChat.jsx';
-
 
 function App() {
   return (
@@ -20,11 +19,25 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/student/register" element={<StudentRegister />} />
       <Route path="/student/login" element={<StudentLogin />} />
-      <Route path="/student/dashboard" element={<ProtectedRoute role="student"><StudentDashboard/></ProtectedRoute>} />
+      <Route
+        path="/student/dashboard"
+        element={
+          <ProtectedRoute role="student">
+            <StudentDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       <Route path="/teacher/register" element={<TeacherRegister />} />
       <Route path="/teacher/login" element={<TeacherLogin />} />
-      <Route path="/teacher/dashboard" element={<ProtectedRoute role="teacher"><TeacherDashboard/></ProtectedRoute>} />
+      <Route
+        path="/teacher/dashboard"
+        element={
+          <ProtectedRoute role="teacher">
+            <TeacherDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       <Route path="/student/class/:classId" element={<ClassLayout />}>
         <Route path="activities" element={<StudentClassActivities />} />
@@ -32,15 +45,8 @@ function App() {
         <Route path="members" element={<StudentClassMembers />} />
         <Route path="chat" element={<StudentClassChat />} />
       </Route>
-
-
-
-
-
     </Routes>
-  )
-
-
+  );
 }
 
-export default App
+export default App;

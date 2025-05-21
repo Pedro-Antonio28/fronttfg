@@ -3,14 +3,24 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "motion/react";
 
 const Calendar = ({ examDates }) => {
-    const today = new Date();
-    const [month, setMonth] = useState(today.getMonth());
-    const [year, setYear] = useState(today.getFullYear());
+  const today = new Date();
+  const [month, setMonth] = useState(today.getMonth());
+  const [year, setYear] = useState(today.getFullYear());
 
-    const monthNames = [
-        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-    ];
+  const monthNames = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ];
 
     const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
     const formatDay = (y, m, d) =>
@@ -33,26 +43,26 @@ const Calendar = ({ examDates }) => {
         return Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
     };
 
-    const daysInMonth = getDaysInMonth(year, month);
-    const startDay = getStartDay(year, month);
+  const daysInMonth = getDaysInMonth(year, month);
+  const startDay = getStartDay(year, month);
 
-    const goToPreviousMonth = () => {
-        if (month === 0) {
-            setMonth(11);
-            setYear((prev) => prev - 1);
-        } else {
-            setMonth((prev) => prev - 1);
-        }
-    };
+  const goToPreviousMonth = () => {
+    if (month === 0) {
+      setMonth(11);
+      setYear((prev) => prev - 1);
+    } else {
+      setMonth((prev) => prev - 1);
+    }
+  };
 
-    const goToNextMonth = () => {
-        if (month === 11) {
-            setMonth(0);
-            setYear((prev) => prev + 1);
-        } else {
-            setMonth((prev) => prev + 1);
-        }
-    };
+  const goToNextMonth = () => {
+    if (month === 11) {
+      setMonth(0);
+      setYear((prev) => prev + 1);
+    } else {
+      setMonth((prev) => prev + 1);
+    }
+  };
 
     return (
         <div className="relative z-0">
@@ -139,8 +149,11 @@ const Calendar = ({ examDates }) => {
                     })}
                 </div>
             </div>
-        </div>
-    );
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 export default Calendar;

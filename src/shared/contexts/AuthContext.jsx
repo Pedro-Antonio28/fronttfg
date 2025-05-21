@@ -10,35 +10,35 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const fetchUser = async () => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-      setLoading(false);
-      return;
-    }
+    const fetchUser = async () => {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+        setLoading(false);
+        return;
+      }
 
-    try {
-      const { data } = await axios.get('/user');
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
-    } catch {
-      setUser(null);
-      localStorage.removeItem('user');
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const { data } = await axios.get('/user');
+        setUser(data);
+        localStorage.setItem('user', JSON.stringify(data));
+      } catch {
+        setUser(null);
+        localStorage.removeItem('user');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchUser();
-}, []);
+    fetchUser();
+  }, []);
 
   const login = async (credentials, role = 'student') => {
     const { data } = await axios.post(`/${role}/login`, credentials);
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify({ ...data.user, role }));
     setUser({ ...data.user, role });
-    console.log(data)
+    console.log(data);
     return data;
   };
 
@@ -63,7 +63,9 @@ export const AuthProvider = ({ children }) => {
   const hasRole = (role) => user?.role === role;
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, login, register, logout, hasRole }}>
+    <AuthContext.Provider
+      value={{ user, loading, isAuthenticated: !!user, login, register, logout, hasRole }}
+    >
       {children}
     </AuthContext.Provider>
   );

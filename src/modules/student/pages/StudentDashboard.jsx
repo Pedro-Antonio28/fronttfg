@@ -3,7 +3,6 @@ import { fetchDashboard } from '../services/studentService';
 import Layout from '../../../shared/components/Layout';
 import ClassesGrid from '../../../shared/components/ClassesGrid.jsx';
 
-
 const StudentDashboard = () => {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,10 +32,12 @@ const StudentDashboard = () => {
 
   return (
     <Layout isStudent={true}>
-       <div className="container mx-auto p-4 md:p-6 lg:p-8">
+      <div className="container mx-auto p-4 md:p-6 lg:p-8">
         <div className="mb-8 flex flex-col gap-2">
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Mis Clases</h1>
-          <p className="text-muted-foreground">Bienvenido de vuelta. Aquí están todas tus clases actuales.</p>
+          <p className="text-muted-foreground">
+            Bienvenido de vuelta. Aquí están todas tus clases actuales.
+          </p>
         </div>
 
         <ClassesGrid classes={classes} />
