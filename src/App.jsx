@@ -12,6 +12,7 @@ import ClassLayout from './shared/components/ClassLayout.jsx';
 import StudentClassResults from './modules/student/pages/StudentClassResults.jsx';
 import StudentClassMembers from './modules/student/pages/StudentClassMembers.jsx';
 import StudentClassChat from './modules/student/pages/StudentClassChat.jsx';
+import JoinClass from './modules/student/pages/JoinClass.jsx';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/student/join-class" element={<JoinClass />} />
 
       <Route path="/teacher/register" element={<TeacherRegister />} />
       <Route path="/teacher/login" element={<TeacherLogin />} />

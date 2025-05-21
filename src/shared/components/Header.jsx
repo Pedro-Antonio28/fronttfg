@@ -27,7 +27,7 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
     ],
     student: [
       { name: 'Bandeja', href: '/inbox' },
-      { name: 'Unirse a Clase', href: '/join-classroom' },
+      { name: "Unirse a Clase", href: "/student/join-class" }
     ],
     guest: [
       { name: 'Soy Profesor', href: '/teacher/login' },
