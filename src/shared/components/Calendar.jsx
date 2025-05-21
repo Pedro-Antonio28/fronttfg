@@ -144,16 +144,13 @@ const Calendar = ({ examDates }) => {
 
                                 )}
                             </motion.div>
-
                         );
                     })}
-                </div>
+                </div> {/* ← ESTA CIERRA el map() */}
             </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default Calendar;
+
