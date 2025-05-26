@@ -4,17 +4,17 @@ import { motion } from "motion/react";
 import logo from '@/shared/assets/images/logo.png';
 import logo_blanco from '@/shared/assets/images/logo_blanco.png';
 import axios from "@/shared/functions/axiosConfig";
+import { useNavigate } from 'react-router-dom';
 
 const JoinClass = () => {
+  const navigate = useNavigate();
   const [classCode, setClassCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
 
     if (!classCode) return;
 
@@ -23,8 +23,7 @@ const JoinClass = () => {
       const response = await axios.post("/student/join-class", {
         join_code: classCode,
       });
-      setSuccess("Te has unido correctamente a la clase.");
-      setClassCode("");
+      navigate("/student/dashboard");
     } catch (err) {
       const msg = err?.response?.data?.message || "Error al unirse a la clase.";
       setError(msg);
@@ -85,7 +84,6 @@ const JoinClass = () => {
               </div>
 
               {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-              {success && <p className="text-green-500 text-sm mb-4 text-center">{success}</p>}
 
               <motion.button
                   whileHover={{ scale: 1.03 }}
