@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import ClassCard from './ClassCard';
 
-export default function ClassesGrid({ classes }) {
+export default function ClassesGrid({ classes, rol }) {
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -22,7 +22,7 @@ export default function ClassesGrid({ classes }) {
       animate="show"
     >
       {classes.map((classItem, index) => (
-        <ClassCard key={classItem.id} classItem={classItem} index={index} />
+        <ClassCard key={classItem.id} classItem={classItem} index={index} rol={rol} />
       ))}
     </motion.div>
   );

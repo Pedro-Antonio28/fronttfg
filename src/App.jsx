@@ -8,11 +8,16 @@ import TeacherLogin from './modules/teacher/pages/TeacherLogin';
 import TeacherDashboard from './modules/teacher/pages/TeacherDashboard';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import StudentClassActivities from './modules/student/pages/StudentClassActivities';
-import ClassLayout from './shared/components/ClassLayout.jsx';
 import StudentClassResults from './modules/student/pages/StudentClassResults.jsx';
 import StudentClassMembers from './modules/student/pages/StudentClassMembers.jsx';
 import StudentClassChat from './modules/student/pages/StudentClassChat.jsx';
 import JoinClass from './modules/student/pages/JoinClass.jsx';
+import StudentClassLayout from './modules/student/components/StudentClassLayout.jsx';
+import TeacherClassLayout from './modules/teacher/components/TeacherClassLayout.jsx';
+import TeacherClassActivities from './modules/teacher/pages/TeacherClassActivities.jsx';
+import TeacherClassResults from './modules/teacher/pages/TeacherClassResults.jsx';
+import TeacherClassMembers from './modules/teacher/pages/TeacherClassMembers.jsx';
+import TeacherClassChat from './modules/teacher/pages/TeacherClassChat.jsx';
 
 function App() {
   return (
@@ -41,11 +46,18 @@ function App() {
         }
       />
 
-      <Route path="/student/class/:classId" element={<ClassLayout />}>
+      <Route path="/student/class/:classId" element={<StudentClassLayout />}>
         <Route path="activities" element={<StudentClassActivities />} />
         <Route path="results" element={<StudentClassResults />} />
         <Route path="members" element={<StudentClassMembers />} />
         <Route path="chat" element={<StudentClassChat />} />
+      </Route>
+
+      <Route path="/teacher/class/:classId" element={<TeacherClassLayout />}>
+        <Route path="activities" element={<TeacherClassActivities />} />
+        <Route path="results" element={<TeacherClassResults />} />
+        <Route path="members" element={<TeacherClassMembers />} />
+        <Route path="chat" element={<TeacherClassChat />} />
       </Route>
     </Routes>
   );

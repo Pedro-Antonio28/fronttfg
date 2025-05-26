@@ -40,7 +40,7 @@ const TeacherDashboard = () => {
           </p>
         </div>
 
-        <ClassesGrid classes={classes} />
+        <ClassesGrid classes={classes} rol="teacher" />
       </div>
       {/* <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-purple-700">Tus clases</h1>

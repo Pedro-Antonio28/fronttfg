@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react';
-import Layout from './Layout';
+import Layout from '../../../shared/components/Layout';
 import { Routes, Route, useParams, Outlet, NavLink } from 'react-router-dom';
 import { BookOpen, FileText, BarChart, Users, MessageSquare } from 'lucide-react';
-
-import StudentClassActivities from '@/modules/student/pages/StudentClassActivities';
-import StudentClassResults from '@/modules/student/pages/StudentClassResults';
-import StudentClassMembers from '@/modules/student/pages/StudentClassMembers';
-import StudentClassChat from '@/modules/student/pages/StudentClassChat';
-import { ClassProvider } from '../../modules/student/services/ClassContext';
+import { ClassProvider } from '../services/ClassContext';
 
 const navItems = [
   { label: 'Actividades', value: 'activities', icon: FileText },
@@ -16,7 +11,7 @@ const navItems = [
   { label: 'Chat', value: 'chat', icon: MessageSquare },
 ];
 
-const ClassLayout = ({ className: passedClassName }) => {
+const StudentClassLayout = ({ className: passedClassName }) => {
   const [className, setClassName] = useState(() => {
     return passedClassName || localStorage.getItem('selectedClassName') || 'Clase';
   });
@@ -85,4 +80,4 @@ const ClassLayout = ({ className: passedClassName }) => {
   );
 };
 
-export default ClassLayout;
+export default StudentClassLayout;
