@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Layout from '../../../shared/components/Layout';
 import { Routes, Route, useParams, Outlet, NavLink } from 'react-router-dom';
-import { BookOpen, FileText, BarChart, Users, MessageSquare } from 'lucide-react';
+import { BookOpen, FileText, BarChart, Users, MessageSquare, Settings } from 'lucide-react';
 import { ClassProvider } from '../services/ClassContext';
 import ClassSettingsModal from './ClassSettingsModal';
 
@@ -41,22 +41,8 @@ const TeacherClassLayout = ({ className: passedClassName }) => {
                   onClick={() => setShowSettings(true)}
                   className="p-2 rounded-full bg-purple-100 hover:bg-purple-200 dark:bg-purple-800 dark:hover:bg-purple-700 text-purple-700 dark:text-purple-200 transition hover:cursor-pointer"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v1m0 14v1m8.485-8.485l-.707.707M4.222 4.222l.707.707m12.02 12.02l.707.707M4.222 19.778l.707-.707M20 12h1M3 12H2"
-                    />
-                  </svg>
+                <Settings className="w-5 h-5" />
                 </button>
-
                 {/* Botón volver */}
                 <a
                   href="/student/dashboard"
