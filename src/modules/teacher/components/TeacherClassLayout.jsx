@@ -3,6 +3,7 @@ import Layout from '../../../shared/components/Layout';
 import { Routes, Route, useParams, Outlet, NavLink } from 'react-router-dom';
 import { BookOpen, FileText, BarChart, Users, MessageSquare } from 'lucide-react';
 import { ClassProvider } from '../services/ClassContext';
+import ClassSettingsModal from './ClassSettingsModal';
 
 const navItems = [
   { label: 'Actividades', value: 'activities', icon: FileText },
@@ -12,6 +13,7 @@ const navItems = [
 ];
 
 const TeacherClassLayout = ({ className: passedClassName }) => {
+  const [showSettings, setShowSettings] = useState(false);
   const [className, setClassName] = useState(() => {
     return passedClassName || localStorage.getItem('selectedClassName') || 'Clase';
   });
@@ -33,12 +35,36 @@ const TeacherClassLayout = ({ className: passedClassName }) => {
                 <BookOpen className="text-purple-600 dark:text-purple-400" />
                 <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">{className}</h2>
               </div>
-              <a
-                href="/student/dashboard"
-                className="text-sm font-medium bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
-              >
-                ← Volver
-              </a>
+              <div className="flex items-center gap-3">
+                {/* Botón engranaje */}
+                <button
+                  onClick={() => setShowSettings(true)}
+                  className="p-2 rounded-full bg-purple-100 hover:bg-purple-200 dark:bg-purple-800 dark:hover:bg-purple-700 text-purple-700 dark:text-purple-200 transition hover:cursor-pointer"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v1m0 14v1m8.485-8.485l-.707.707M4.222 4.222l.707.707m12.02 12.02l.707.707M4.222 19.778l.707-.707M20 12h1M3 12H2"
+                    />
+                  </svg>
+                </button>
+
+                {/* Botón volver */}
+                <a
+                  href="/student/dashboard"
+                  className="text-sm font-medium bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
+                >
+                  ← Volver
+                </a>
+              </div>
             </div>
           </div>
 
@@ -75,6 +101,10 @@ const TeacherClassLayout = ({ className: passedClassName }) => {
             </main>
           </div>
         </div>
+        <ClassSettingsModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+        />
       </ClassProvider>
     </Layout>
   );
