@@ -130,6 +130,24 @@ const RegisterBase = ({ role, redirectTo, loginRoute, rol }) => {
             Inicia sesión aquí
           </Link>
         </div>
+        <div className="mt-4 text-center text-sm text-gray-600">
+          {role === 'teacher' && (
+            <Link
+              to="/student/register"
+              className="text-purple-600 hover:text-purple-800 font-medium transition"
+            >
+              Soy alumno
+            </Link>
+          )}
+          {role === 'student' && (
+            <Link
+              to="/teacher/register"
+              className="text-purple-600 hover:text-purple-800 font-medium transition"
+            >
+              Soy profesor
+            </Link>
+          )}
+        </div>
       </motion.div>
     </div>
   );
