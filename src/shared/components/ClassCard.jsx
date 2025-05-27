@@ -2,69 +2,53 @@
 
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import imagenPrueba from '@/shared/assets/images/imagenPrueba.jpeg';
 
-const Card = ({ className, children, ...props }) => {
-  return (
-    <div className={`rounded-lg bg-white shadow-sm ${className || ''}`} {...props}>
-      {children}
-    </div>
-  );
-};
+const Card = ({ className, children, ...props }) => (
+  <div className={`rounded-lg bg-white shadow-sm ${className || ''}`} {...props}>
+    {children}
+  </div>
+);
 
-const CardHeader = ({ className, children, ...props }) => {
-  return (
-    <div className={`${className || ''}`} {...props}>
-      {children}
-    </div>
-  );
-};
+const CardHeader = ({ className, children, ...props }) => (
+  <div className={`${className || ''}`} {...props}>
+    {children}
+  </div>
+);
 
-const CardContent = ({ className, children, ...props }) => {
-  return (
-    <div className={`${className || ''}`} {...props}>
-      {children}
-    </div>
-  );
-};
+const CardContent = ({ className, children, ...props }) => (
+  <div className={`${className || ''}`} {...props}>
+    {children}
+  </div>
+);
 
-const CardFooter = ({ className, children, ...props }) => {
-  return (
-    <div className={`${className || ''}`} {...props}>
-      {children}
-    </div>
-  );
-};
+const CardFooter = ({ className, children, ...props }) => (
+  <div className={`${className || ''}`} {...props}>
+    {children}
+  </div>
+);
 
-const Avatar = ({ className, children, ...props }) => {
-  return (
-    <div
-      className={`relative flex shrink-0 overflow-hidden rounded-full ${className || ''}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+const Avatar = ({ className, children, ...props }) => (
+  <div className={`relative flex shrink-0 overflow-hidden rounded-full ${className || ''}`} {...props}>
+    {children}
+  </div>
+);
 
-const AvatarImage = ({ src, alt, className, ...props }) => {
-  return (
-    <img
-      src={src || '/placeholder.svg'}
-      alt={alt || ''}
-      className={`aspect-square h-full w-full object-cover ${className || ''}`}
-      {...props}
-    />
-  );
-};
+const AvatarImage = ({ src, alt, className, ...props }) => (
+  <img
+    src={src || '/placeholder.svg'}
+    alt={alt || ''}
+    className={`aspect-square h-full w-full object-cover ${className || ''}`}
+    {...props}
+  />
+);
 
-const AvatarFallback = ({ className, children, ...props }) => {
-  return (
-    <div className={`flex h-full w-full items-center justify-center ${className || ''}`} {...props}>
-      {children}
-    </div>
-  );
-};
+const AvatarFallback = ({ className, children, ...props }) => (
+  <div className={`flex h-full w-full items-center justify-center ${className || ''}`} {...props}>
+    {children}
+  </div>
+);
 
 const Button = ({ variant, className, children, ...props }) => {
   const variantClasses = {
@@ -82,7 +66,9 @@ const Button = ({ variant, className, children, ...props }) => {
   );
 };
 
-export default function ClassCard({ classItem, index }) {
+export default function ClassCard({ classItem, index, rol }) {
+  const navigate = useNavigate();
+
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: {
@@ -94,12 +80,23 @@ export default function ClassCard({ classItem, index }) {
     },
   };
 
-  // Función para obtener las iniciales del nombre
   const getInitials = (name) => {
     return name
       .split(' ')
       .map((n) => n[0])
       .join('');
+  };
+
+  const goToClass = () => {
+    localStorage.setItem('selectedClassName', classItem.class_name);
+    document.title = classItem.class_name;
+
+    const baseRoute =
+      rol === 'teacher' ? '/teacher/class/' :
+      rol === 'director' ? '/director/class/' :
+      '/student/class/';
+
+    navigate(`${baseRoute}${classItem.id}`);
   };
 
   return (
@@ -110,14 +107,7 @@ export default function ClassCard({ classItem, index }) {
         transition: { duration: 0.2 },
       }}
     >
-      <div
-        className="block cursor-pointer"
-        onClick={() => {
-          localStorage.setItem('selectedClassName', classItem.class_name);
-          document.title = classItem.class_name;
-          window.location.href = `/student/class/${classItem.id}`;
-        }}
-      >
+      <div onClick={goToClass} className="block cursor-pointer">
         <Card className="overflow-hidden bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
           <CardHeader className="p-0">
             <motion.div
