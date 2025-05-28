@@ -22,12 +22,12 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
     ],
     teacher: [
       { name: 'Bandeja', href: '/inbox' },
-      { name: 'Almacén', href: '/storage' },
+      { name: 'Almacén', href: '/teacher/storage-bank' },
       { name: 'Nueva Clase', href: '/new-classroom' },
     ],
     student: [
       { name: 'Bandeja', href: '/inbox' },
-      { name: "Unirse a Clase", href: "/student/join-class" }
+      { name: 'Unirse a Clase', href: '/student/join-class' },
     ],
     guest: [
       { name: 'Soy Profesor', href: '/teacher/login' },
