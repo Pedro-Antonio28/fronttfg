@@ -1,21 +1,21 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Plus, Trash2, X, ChevronDown } from 'lucide-react';
 import Modal from '@/shared/components/Modal';
 
-function QuestionTypeForm({ type }) {
+function QuestionTypeForm({ type, onChange }) {
   switch (type) {
     case 'single':
-      return <SingleChoiceForm />;
+      return <SingleChoiceForm onChange={onChange} />;
     case 'multiple':
-      return <MultipleChoiceForm />;
+      return <MultipleChoiceForm onChange={onChange} />;
     case 'text':
       return <TextResponseForm />;
     case 'match':
-      return <MatchingForm />;
+      return <MatchingForm onChange={onChange} />;
     case 'fill_blank':
-      return <FillBlankForm />;
+      return <FillBlankForm onChange={onChange} />;
     case 'fill_multiple':
-      return <FillMultipleForm />;
+      return <FillMultipleForm onChange={onChange} />;
     default:
       return null;
   }
@@ -85,18 +85,20 @@ const CreateQuestionModal = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Form Section */}
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                Título de la pregunta
-              </label>
-              <input
-                type="text"
-                value={questionForm.title}
-                onChange={(e) => updateForm('title', e.target.value)}
-                placeholder="Escribe tu pregunta aquí..."
-                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
+            {!['fill_blank', 'fill_multiple'].includes(questionForm.type) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                  Título de la pregunta
+                </label>
+                <input
+                  type="text"
+                  value={questionForm.title}
+                  onChange={(e) => updateForm('title', e.target.value)}
+                  placeholder="Escribe tu pregunta aquí..."
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
@@ -123,7 +125,18 @@ const CreateQuestionModal = ({
               />
             </div>
 
-            <QuestionTypeForm type={questionForm.type} />
+            <QuestionTypeForm
+              type={questionForm.type}
+              onChange={(content) => {
+                if (['fill_blank', 'fill_multiple'].includes(questionForm.type)) {
+                  const { text, blanks } = content;
+                  updateForm('title', text || '');
+                  updateForm('content', blanks);
+                } else {
+                  updateForm('content', content);
+                }
+              }}
+            />
           </div>
 
           {/* Preview Section */}
@@ -155,7 +168,7 @@ const CreateQuestionModal = ({
   );
 };
 
-function SingleChoiceForm() {
+function SingleChoiceForm({ onChange }) {
   const [options, setOptions] = useState(['', '']);
   const [correctOption, setCorrectOption] = useState(0);
 
@@ -178,6 +191,9 @@ function SingleChoiceForm() {
     newOptions[index] = value;
     setOptions(newOptions);
   };
+  useEffect(() => {
+    onChange({ options, correct_option: correctOption });
+  }, [options, correctOption]);
 
   return (
     <div className="space-y-4">
@@ -230,7 +246,7 @@ function SingleChoiceForm() {
   );
 }
 
-function MultipleChoiceForm() {
+function MultipleChoiceForm({ onChange }) {
   const [options, setOptions] = useState(['', '']);
   const [correctOptions, setCorrectOptions] = useState([false, false]);
 
@@ -259,6 +275,13 @@ function MultipleChoiceForm() {
     newCorrect[index] = checked;
     setCorrectOptions(newCorrect);
   };
+
+  useEffect(() => {
+    const correctOptionsFinal = correctOptions
+      .map((isCorrect, i) => (isCorrect ? i : null))
+      .filter((i) => i !== null);
+    onChange({ options, correct_options: correctOptionsFinal });
+  }, [options, correctOptions]);
 
   return (
     <div className="space-y-4">
@@ -313,14 +336,6 @@ function MultipleChoiceForm() {
 function TextResponseForm() {
   return (
     <div className="space-y-4">
-      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
-        Instrucciones para el estudiante
-      </label>
-      <textarea
-        placeholder="Proporciona instrucciones claras sobre qué esperas en la respuesta..."
-        className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-        rows={4}
-      />
       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-600/30 rounded-lg p-3">
         <p className="text-yellow-700 dark:text-yellow-400 text-sm">
           ⚠️ Las respuestas de texto requieren revisión manual del profesor
@@ -330,7 +345,7 @@ function TextResponseForm() {
   );
 }
 
-function MatchingForm() {
+function MatchingForm({ onChange }) {
   const [pairs, setPairs] = useState([
     { left: '', right: '' },
     { left: '', right: '' },
@@ -352,6 +367,10 @@ function MatchingForm() {
     newPairs[index][side] = value;
     setPairs(newPairs);
   };
+
+  useEffect(() => {
+    onChange({ pairs });
+  }, [pairs]);
 
   return (
     <div className="space-y-4">
@@ -421,7 +440,7 @@ function MatchingForm() {
   );
 }
 
-function FillBlankForm() {
+function FillBlankForm({ onChange }) {
   const [text, setText] = useState('');
   const [blanks, setBlanks] = useState({});
   const [selectedBlank, setSelectedBlank] = useState(null);
@@ -509,6 +528,10 @@ function FillBlankForm() {
 
     setSelectedBlank(null);
   };
+
+  useEffect(() => {
+    onChange({ text, blanks });
+  }, [text, blanks]);
 
   return (
     <div className="space-y-4">
@@ -615,7 +638,7 @@ function FillBlankForm() {
   );
 }
 
-function FillMultipleForm() {
+function FillMultipleForm({ onChange }) {
   const [text, setText] = useState('');
   const [blanks, setBlanks] = useState({});
   const [selectedBlank, setSelectedBlank] = useState(null);
@@ -742,6 +765,10 @@ function FillMultipleForm() {
 
     setSelectedBlank(null);
   };
+
+  useEffect(() => {
+    onChange({ text, blanks });
+  }, [text, blanks]);
 
   return (
     <div className="space-y-4">

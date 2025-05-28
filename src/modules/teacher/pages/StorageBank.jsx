@@ -167,31 +167,28 @@ export default function StorageBank() {
   };
 
   const handleSaveQuestion = () => {
+    const formattedQuestion = {
+      title: questionForm.title.trim(),
+      type: questionForm.type,
+      tags: questionForm.tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+      content: questionForm.content, // <-- ahora es uniforme
+    };
+
+    // Simula envío (luego se reemplaza por axios.post('/questions', formattedQuestion))
+    console.log('Pregunta formateada:', formattedQuestion);
+
     if (currentQuestion) {
-      const updatedQuestion = {
-        ...currentQuestion,
-        title: questionForm.title,
-        type: questionForm.type,
-        tags: questionForm.tags
-          .split(',')
-          .map((tag) => tag.trim())
-          .filter(Boolean),
-      };
-
-      setQuestions(questions.map((q) => (q.id === currentQuestion.id ? updatedQuestion : q)));
+      setQuestions(
+        questions.map((q) => (q.id === currentQuestion.id ? { ...q, ...formattedQuestion } : q))
+      );
     } else {
-      const newQuestion = {
-        id: Date.now(),
-        title: questionForm.title,
-        type: questionForm.type,
-        tags: questionForm.tags
-          .split(',')
-          .map((tag) => tag.trim())
-          .filter(Boolean),
-        createdAt: new Date().toISOString().split('T')[0],
-      };
-
-      setQuestions([newQuestion, ...questions]);
+      setQuestions([
+        { ...formattedQuestion, id: Date.now(), createdAt: new Date().toISOString().split('T')[0] },
+        ...questions,
+      ]);
     }
 
     setIsCreateModalOpen(false);
