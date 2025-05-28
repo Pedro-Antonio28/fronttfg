@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import Layout from '../../../shared/components/Layout';
 import CreateQuestionModal from '../components/CreateQuestionModal';
+import axios from '@/shared/functions/axiosConfig';
 
 const questionTypes = {
   single: { icon: BookOpen, label: 'Opción única', color: 'bg-blue-500' },
@@ -25,37 +26,6 @@ const questionTypes = {
   fill_blank: { icon: Type, label: 'Rellenar huecos', color: 'bg-orange-500' },
   fill_multiple: { icon: Grid3X3, label: 'Huecos múltiples', color: 'bg-red-500' },
 };
-
-const mockQuestions = [
-  {
-    id: 1,
-    title: '¿Cuál es la capital de Francia?',
-    type: 'single',
-    tags: ['Geografía', 'Europa'],
-    createdAt: '2024-01-15',
-  },
-  {
-    id: 2,
-    title: 'Selecciona los países de América del Sur',
-    type: 'multiple',
-    tags: ['Geografía', 'América'],
-    createdAt: '2024-01-14',
-  },
-  {
-    id: 3,
-    title: 'Explica el proceso de fotosíntesis',
-    type: 'text',
-    tags: ['Biología', 'Plantas'],
-    createdAt: '2024-01-13',
-  },
-  {
-    id: 4,
-    title: 'Relaciona cada país con su capital',
-    type: 'match',
-    tags: ['Geografía', 'Capitales'],
-    createdAt: '2024-01-12',
-  },
-];
 
 const getAllTags = (questions) => {
   const allTags = questions.flatMap((question) => question.tags);
@@ -102,7 +72,7 @@ function CustomSelect({ value, onValueChange, options, placeholder, className = 
 }
 
 export default function StorageBank() {
-  const [questions, setQuestions] = useState(mockQuestions);
+  const [questions, setQuestions] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [selectedTag, setSelectedTag] = useState('all');
@@ -114,6 +84,20 @@ export default function StorageBank() {
     tags: '',
     content: {},
   });
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const { data } = await axios.get('/teacher/bank-questions');
+        setQuestions(data.data);
+        console.log(data);
+      } catch (error) {
+        console.error('Error cargando preguntas del banco:', error);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
 
   const allTags = getAllTags(questions);
 
@@ -339,7 +323,7 @@ export default function StorageBank() {
                         </h3>
 
                         <div className="flex flex-wrap gap-1 mb-4">
-                          {question.tags.map((tag, index) => (
+                          {(question.tags || []).map((tag, index) => (
                             <span
                               key={index}
                               className="inline-block px-2 py-1 border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-400 text-xs rounded"
