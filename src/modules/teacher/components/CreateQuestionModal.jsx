@@ -3,20 +3,40 @@ import { Plus, Trash2, X, ChevronDown } from 'lucide-react';
 import Modal from '@/shared/components/Modal';
 import CreatableSelect from 'react-select/creatable';
 
-function QuestionTypeForm({ type, onChange }) {
+function generateTextWithPlaceholders(originalText, blanks) {
+  if (!originalText || !blanks) return originalText;
+
+  // Si ya contiene [🔲n], no hacer nada
+  if (originalText.includes('[🔲')) return originalText;
+
+  const blankList = Object.values(blanks).sort((a, b) => a.number - b.number);
+  const parts = originalText.split('___');
+
+  let rebuilt = '';
+  for (let i = 0; i < parts.length; i++) {
+    rebuilt += parts[i];
+    if (i < blankList.length) {
+      rebuilt += `[🔲${blankList[i].number}]`;
+    }
+  }
+
+  return rebuilt;
+}
+
+function QuestionTypeForm({ type, onChange, content }) {
   switch (type) {
     case 'single':
-      return <SingleChoiceForm onChange={onChange} />;
+      return <SingleChoiceForm onChange={onChange} initialContent={content} />;
     case 'multiple':
-      return <MultipleChoiceForm onChange={onChange} />;
+      return <MultipleChoiceForm onChange={onChange} initialContent={content} />;
     case 'text':
       return <TextResponseForm />;
     case 'match':
-      return <MatchingForm onChange={onChange} />;
+      return <MatchingForm onChange={onChange} initialContent={content} />;
     case 'fill_blank':
-      return <FillBlankForm onChange={onChange} />;
+      return <FillBlankForm onChange={onChange} initialContent={content} />;
     case 'fill_multiple':
-      return <FillMultipleForm onChange={onChange} />;
+      return <FillMultipleForm onChange={onChange} initialContent={content} />;
     default:
       return null;
   }
@@ -182,6 +202,14 @@ const CreateQuestionModal = ({
 
             <QuestionTypeForm
               type={questionForm.type}
+              content={
+                ['fill_blank', 'fill_multiple'].includes(questionForm.type)
+                  ? {
+                      text: generateTextWithPlaceholders(questionForm.title, questionForm.content),
+                      blanks: questionForm.content,
+                    }
+                  : questionForm.content
+              }
               onChange={(content) => {
                 if (['fill_blank', 'fill_multiple'].includes(questionForm.type)) {
                   const { text, blanks } = content;
@@ -223,9 +251,9 @@ const CreateQuestionModal = ({
   );
 };
 
-function SingleChoiceForm({ onChange }) {
-  const [options, setOptions] = useState(['', '']);
-  const [correctOption, setCorrectOption] = useState(0);
+function SingleChoiceForm({ onChange, initialContent }) {
+  const [options, setOptions] = useState(initialContent?.options || ['', '']);
+  const [correctOption, setCorrectOption] = useState(initialContent?.correct_option || 0);
 
   const addOption = () => {
     setOptions([...options, '']);
@@ -301,9 +329,12 @@ function SingleChoiceForm({ onChange }) {
   );
 }
 
-function MultipleChoiceForm({ onChange }) {
-  const [options, setOptions] = useState(['', '']);
-  const [correctOptions, setCorrectOptions] = useState([false, false]);
+function MultipleChoiceForm({ onChange, initialContent }) {
+  const [options, setOptions] = useState(initialContent?.options || ['', '']);
+  const [correctOptions, setCorrectOptions] = useState(() => {
+    const correct = initialContent?.correct_options || [];
+    return options.map((_, i) => correct.includes(i));
+  });
 
   const addOption = () => {
     setOptions([...options, '']);
@@ -400,11 +431,13 @@ function TextResponseForm() {
   );
 }
 
-function MatchingForm({ onChange }) {
-  const [pairs, setPairs] = useState([
-    { left: '', right: '' },
-    { left: '', right: '' },
-  ]);
+function MatchingForm({ onChange, initialContent }) {
+  const [pairs, setPairs] = useState(
+    initialContent?.pairs || [
+      { left: '', right: '' },
+      { left: '', right: '' },
+    ]
+  );
 
   const addPair = () => {
     setPairs([...pairs, { left: '', right: '' }]);
@@ -495,11 +528,15 @@ function MatchingForm({ onChange }) {
   );
 }
 
-function FillBlankForm({ onChange }) {
-  const [text, setText] = useState('');
-  const [blanks, setBlanks] = useState({});
+function FillBlankForm({ onChange, initialContent }) {
+  const [text, setText] = useState(initialContent?.text || '');
+  const [blanks, setBlanks] = useState(initialContent?.blanks || {});
   const [selectedBlank, setSelectedBlank] = useState(null);
-  const [blankCounter, setBlankCounter] = useState(0);
+  const [blankCounter, setBlankCounter] = useState(() => {
+    if (!initialContent?.blanks) return 0;
+    const max = Object.values(initialContent.blanks).map((b) => b.number || 0);
+    return max.length > 0 ? Math.max(...max) : 0;
+  });
   const textareaRef = useRef(null);
 
   const addBlank = () => {
@@ -693,11 +730,15 @@ function FillBlankForm({ onChange }) {
   );
 }
 
-function FillMultipleForm({ onChange }) {
-  const [text, setText] = useState('');
-  const [blanks, setBlanks] = useState({});
+function FillMultipleForm({ onChange, initialContent }) {
+  const [text, setText] = useState(initialContent?.text || '');
+  const [blanks, setBlanks] = useState(initialContent?.blanks || {});
   const [selectedBlank, setSelectedBlank] = useState(null);
-  const [blankCounter, setBlankCounter] = useState(0);
+  const [blankCounter, setBlankCounter] = useState(() => {
+    if (!initialContent?.blanks) return 0;
+    const max = Object.values(initialContent.blanks).map((b) => b.number || 0);
+    return max.length > 0 ? Math.max(...max) : 0;
+  });
   const textareaRef = useRef(null);
 
   const addBlank = () => {
