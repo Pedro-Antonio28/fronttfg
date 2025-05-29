@@ -100,6 +100,7 @@ export default function StorageBank() {
   }, []);
 
   const allTags = getAllTags(questions);
+  const tagSelectOptions = allTags.map((tag) => ({ label: tag, value: tag }));
 
   // Opciones para los selects
   const typeOptions = [
@@ -143,7 +144,7 @@ export default function StorageBank() {
     setQuestionForm({
       title: question.title,
       type: question.type,
-      tags: question.tags.join(', '),
+      tags: question.tags.map((tag) => ({ value: tag, label: tag })),
       content: question.content || {},
     });
     setCurrentQuestion(question);
@@ -395,6 +396,7 @@ export default function StorageBank() {
             currentQuestion={currentQuestion}
             questionTypeOptions={questionTypeOptions}
             questionTypes={questionTypes}
+            tagOptions={tagSelectOptions}
           />
         )}
       </div>

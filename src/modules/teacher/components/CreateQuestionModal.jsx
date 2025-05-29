@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Plus, Trash2, X, ChevronDown } from 'lucide-react';
 import Modal from '@/shared/components/Modal';
+import CreatableSelect from 'react-select/creatable';
 
 function QuestionTypeForm({ type, onChange }) {
   switch (type) {
@@ -69,10 +70,12 @@ const CreateQuestionModal = ({
   currentQuestion,
   questionTypeOptions,
   questionTypes,
+  tagOptions,
 }) => {
   const updateForm = (field, value) => {
     setQuestionForm((prev) => ({ ...prev, [field]: value }));
   };
+  const isDark = document.documentElement.classList.contains('dark');
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="p-6">
@@ -116,12 +119,64 @@ const CreateQuestionModal = ({
               <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Etiquetas (separadas por comas)
               </label>
-              <input
-                type="text"
-                value={questionForm.tags}
-                onChange={(e) => updateForm('tags', e.target.value)}
-                placeholder="Matemáticas, Álgebra, Básico"
-                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              <CreatableSelect
+                isMulti
+                options={tagOptions}
+                noOptionsMessage={() => 'No hay más opciones disponibles'}
+                value={(questionForm.tags || []).map((tag) =>
+                  typeof tag === 'string' ? { label: tag, value: tag } : tag
+                )}
+                onChange={(newValue) =>
+                  updateForm(
+                    'tags',
+                    newValue.map((opt) => opt.value)
+                  )
+                }
+                placeholder="Añadir etiquetas..."
+                className="text-black dark:text-white"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor: isDark ? '#1e293b' : '#ffffff', // slate-800 o blanco
+                    borderColor: isDark ? '#4b5563' : '#d1d5db', // gray-600 o gray-300
+                    color: isDark ? 'white' : 'black',
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                    color: isDark ? 'white' : 'black',
+                    zIndex: 99,
+                  }),
+                  option: (base, { isFocused }) => ({
+                    ...base,
+                    backgroundColor: isFocused
+                      ? isDark
+                        ? '#4f46e5' // purple-600
+                        : '#e5e7eb' // gray-200
+                      : isDark
+                        ? '#1e293b'
+                        : '#ffffff',
+                    color: isDark ? 'white' : 'black',
+                    cursor: 'pointer',
+                  }),
+                  multiValue: (base) => ({
+                    ...base,
+                    backgroundColor: '#7c3aed', // purple-600
+                    color: 'white',
+                  }),
+                  multiValueLabel: (base) => ({
+                    ...base,
+                    color: 'white',
+                  }),
+                  input: (base) => ({
+                    ...base,
+                    color: isDark ? 'white' : 'black',
+                  }),
+                  placeholder: (base) => ({
+                    ...base,
+                    color: isDark ? '#cbd5e1' : '#6b7280', // slate-300 o gray-500
+                  }),
+                }}
               />
             </div>
 
@@ -933,7 +988,9 @@ function QuestionPreview({ questionForm, questionTypes }) {
           </p>
           <p>
             <span className="font-medium text-gray-700 dark:text-slate-300">Etiquetas:</span>{' '}
-            {tags ? tags : 'Sin etiquetas'}
+            {Array.isArray(tags) && tags.length > 0
+              ? tags.map((tag) => (typeof tag === 'string' ? tag : tag.label || '')).join(', ')
+              : 'Sin etiquetas'}
           </p>
         </div>
       </div>
