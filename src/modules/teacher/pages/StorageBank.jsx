@@ -133,7 +133,7 @@ export default function StorageBank() {
     setQuestionForm({
       title: '',
       type: 'single',
-      tags: '',
+      tags: [],
       content: {},
     });
     setCurrentQuestion(null);
