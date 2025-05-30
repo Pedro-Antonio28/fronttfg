@@ -143,13 +143,11 @@ const CreateQuestionModal = ({
                 isMulti
                 options={tagOptions}
                 noOptionsMessage={() => 'No hay más opciones disponibles'}
-                value={(questionForm.tags || []).map((tag) =>
-                  typeof tag === 'string' ? { label: tag, value: tag } : tag
-                )}
-                onChange={(newValue) =>
+                value={(questionForm.tags || []).map((tag) => ({ label: tag, value: tag }))}
+                onChange={(selected) =>
                   updateForm(
                     'tags',
-                    newValue.map((opt) => opt.value)
+                    selected.map((tag) => tag.value)
                   )
                 }
                 placeholder="Añadir etiquetas..."

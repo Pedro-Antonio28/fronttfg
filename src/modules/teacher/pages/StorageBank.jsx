@@ -144,7 +144,7 @@ export default function StorageBank() {
     setQuestionForm({
       title: question.title,
       type: question.type,
-      tags: question.tags.map((tag) => ({ value: tag, label: tag })),
+      tags: question.tags.map((tag) => (typeof tag === 'string' ? tag : tag.value)),
       content: question.content || {},
     });
     setCurrentQuestion(question);
@@ -152,13 +152,11 @@ export default function StorageBank() {
   };
 
   const handleSaveQuestion = () => {
+    console.log(questionForm);
     const formattedQuestion = {
       title: questionForm.title.trim(),
       type: questionForm.type,
-      tags: questionForm.tags
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean),
+      tags: questionForm.tags.map((tag) => tag.trim()).filter(Boolean),
       content: questionForm.content, // <-- ahora es uniforme
     };
 
