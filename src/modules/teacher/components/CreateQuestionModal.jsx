@@ -3,26 +3,6 @@ import { Plus, Trash2, X, ChevronDown } from 'lucide-react';
 import Modal from '@/shared/components/Modal';
 import CreatableSelect from 'react-select/creatable';
 
-function generateTextWithPlaceholders(originalText, blanks) {
-  if (!originalText || !blanks) return originalText;
-
-  // Si ya contiene [🔲n], no hacer nada
-  if (originalText.includes('[🔲')) return originalText;
-
-  const blankList = Object.values(blanks).sort((a, b) => a.number - b.number);
-  const parts = originalText.split('___');
-
-  let rebuilt = '';
-  for (let i = 0; i < parts.length; i++) {
-    rebuilt += parts[i];
-    if (i < blankList.length) {
-      rebuilt += `[🔲${blankList[i].number}]`;
-    }
-  }
-
-  return rebuilt;
-}
-
 function QuestionTypeForm({ type, onChange, content }) {
   switch (type) {
     case 'single':
@@ -203,7 +183,7 @@ const CreateQuestionModal = ({
               content={
                 ['fill_blank', 'fill_multiple'].includes(questionForm.type)
                   ? {
-                      text: generateTextWithPlaceholders(questionForm.title, questionForm.content),
+                      text: questionForm.title,
                       blanks: questionForm.content,
                     }
                   : questionForm.content
