@@ -151,17 +151,74 @@ export default function StorageBank() {
     setIsCreateModalOpen(true);
   };
 
-  const handleSaveQuestion = () => {
-    console.log(questionForm);
+  const handleSaveQuestion = async () => {
+    const formattedTags = questionForm.tags.map((tag) => tag.trim()).filter(Boolean);
+
+    let formattedContent = questionForm.content;
+
+    if (questionForm.type === 'single') {
+      formattedContent = {
+        correct: questionForm.content.correct_option,
+        options: questionForm.content.options,
+      };
+    }
+
+    if (questionForm.type === 'multiple') {
+      formattedContent = {
+        correct: questionForm.content.correct_options,
+        options: questionForm.content.options,
+      };
+    }
+
+    if (questionForm.type === 'text') {
+      formattedContent = {};
+    }
+
+    if (questionForm.type === 'match') {
+      formattedContent = {
+        pairs: questionForm.content.pairs,
+      };
+    }
+
+    if (questionForm.type === 'fill_blank') {
+      const blanks = Object.entries(questionForm.content)
+        .filter(([key]) => key.startsWith('blank_'))
+        .map(([, blank]) => ({
+          blanks: [blank.correctAnswer],
+          position: blank.number - 1,
+        }));
+      formattedContent = blanks;
+    }
+
+    if (questionForm.type === 'fill_multiple') {
+      const blanks = Object.entries(questionForm.content)
+        .filter(([key]) => key.startsWith('blank_'))
+        .map(([, blank]) => ({
+          options: blank.options,
+          correct: blank.correct,
+          position: blank.number - 1,
+        }));
+      formattedContent = blanks;
+    }
+
     const formattedQuestion = {
       title: questionForm.title.trim(),
       type: questionForm.type,
-      tags: questionForm.tags.map((tag) => tag.trim()).filter(Boolean),
-      content: questionForm.content, // <-- ahora es uniforme
+      tags: formattedTags,
+      content: formattedContent,
     };
 
-    // Simula envío (luego se reemplaza por axios.post('/questions', formattedQuestion))
     console.log('Pregunta formateada:', formattedQuestion);
+    try {
+      await axios.post('/teacher/question', {
+        name: formattedQuestion.title,
+        type: formattedQuestion.type,
+        answer: formattedQuestion.content,
+        tags: formattedQuestion.tags,
+      });
+    } catch (error) {
+      console.error('Error al guardar en backend:', error);
+    }
 
     if (currentQuestion) {
       setQuestions(
