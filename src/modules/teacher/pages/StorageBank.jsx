@@ -210,25 +210,43 @@ export default function StorageBank() {
 
     console.log('Pregunta formateada:', formattedQuestion);
     try {
-      await axios.post('/teacher/question', {
-        name: formattedQuestion.title,
-        type: formattedQuestion.type,
-        answer: formattedQuestion.content,
-        tags: formattedQuestion.tags,
-      });
+      if (currentQuestion) {
+        // 🔁 EDITAR
+        console.log(currentQuestion);
+        await axios.put(`/teacher/question/${currentQuestion.id}`, {
+          name: formattedQuestion.title,
+          type: formattedQuestion.type,
+          answer: formattedQuestion.content,
+          tags: formattedQuestion.tags,
+        });
+
+        // actualizar localmente
+        setQuestions((prev) =>
+          prev.map((q) => (q.id === currentQuestion.id ? { ...q, ...formattedQuestion } : q))
+        );
+      } else {
+        // ➕ CREAR
+        const { data } = await axios.post('/teacher/question', {
+          name: formattedQuestion.title,
+          type: formattedQuestion.type,
+          answer: formattedQuestion.content,
+          tags: formattedQuestion.tags,
+        });
+
+        // añadir localmente
+        setQuestions((prev) => [
+          {
+            ...formattedQuestion,
+            id: data.id ?? Date.now(), // si tu backend no devuelve el id
+            createdAt: new Date().toISOString().split('T')[0],
+          },
+          ...prev,
+        ]);
+      }
+
+      setIsCreateModalOpen(false);
     } catch (error) {
       console.error('Error al guardar en backend:', error);
-    }
-
-    if (currentQuestion) {
-      setQuestions(
-        questions.map((q) => (q.id === currentQuestion.id ? { ...q, ...formattedQuestion } : q))
-      );
-    } else {
-      setQuestions([
-        { ...formattedQuestion, id: Date.now(), createdAt: new Date().toISOString().split('T')[0] },
-        ...questions,
-      ]);
     }
 
     setIsCreateModalOpen(false);
