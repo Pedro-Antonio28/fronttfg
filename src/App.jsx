@@ -18,6 +18,7 @@ import TeacherClassActivities from './modules/teacher/pages/TeacherClassActiviti
 import TeacherClassResults from './modules/teacher/pages/TeacherClassResults.jsx';
 import TeacherClassMembers from './modules/teacher/pages/TeacherClassMembers.jsx';
 import TeacherClassChat from './modules/teacher/pages/TeacherClassChat.jsx';
+import StorageBank from './modules/teacher/pages/StorageBank.jsx';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/teacher/storage-bank" element={<StorageBank />} />
 
       <Route path="/student/class/:classId" element={<StudentClassLayout />}>
         <Route path="activities" element={<StudentClassActivities />} />
