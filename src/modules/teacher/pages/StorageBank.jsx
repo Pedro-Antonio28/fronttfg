@@ -129,6 +129,15 @@ export default function StorageBank() {
     return matchesSearch && matchesType && matchesTag;
   });
 
+  const handleDeleteQuestion = async (questionId) => {
+    try {
+      await axios.delete(`/teacher/question/${questionId}`);
+      setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+    } catch (error) {
+      console.error('Error al eliminar la pregunta:', error);
+    }
+  };
+
   const handleCreateQuestion = () => {
     setQuestionForm({
       title: '',
@@ -418,7 +427,10 @@ export default function StorageBank() {
                             >
                               <Edit className="w-4 h-4" />
                             </button>
-                            <button className="p-1 text-red-400 hover:text-red-300 transition-colors">
+                            <button
+                              className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                              onClick={() => handleDeleteQuestion(question.id)}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
