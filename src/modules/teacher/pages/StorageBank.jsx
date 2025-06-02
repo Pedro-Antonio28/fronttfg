@@ -73,6 +73,9 @@ function CustomSelect({ value, onValueChange, options, placeholder, className = 
 
 export default function StorageBank() {
   const [questions, setQuestions] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [selectedTag, setSelectedTag] = useState('all');
@@ -88,8 +91,9 @@ export default function StorageBank() {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const { data } = await axios.get('/teacher/bank-questions');
+        const { data } = await axios.get(`/teacher/bank-questions?page=${currentPage}`);
         setQuestions(data.data);
+        setLastPage(data.meta.last_page);
         console.log(data);
       } catch (error) {
         console.error('Error cargando preguntas del banco:', error);
@@ -97,7 +101,7 @@ export default function StorageBank() {
     };
 
     fetchQuestions();
-  }, []);
+  }, [currentPage, refreshTrigger]);
 
   const allTags = getAllTags(questions);
   const tagSelectOptions = allTags.map((tag) => ({ label: tag, value: tag }));
@@ -132,7 +136,8 @@ export default function StorageBank() {
   const handleDeleteQuestion = async (questionId) => {
     try {
       await axios.delete(`/teacher/question/${questionId}`);
-      setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+      setCurrentPage((prev) => (questions.length === 1 && prev > 1 ? prev - 1 : prev));
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
       console.error('Error al eliminar la pregunta:', error);
     }
@@ -241,16 +246,8 @@ export default function StorageBank() {
           answer: formattedQuestion.content,
           tags: formattedQuestion.tags,
         });
-
-        // añadir localmente
-        setQuestions((prev) => [
-          {
-            ...formattedQuestion,
-            id: data.id ?? Date.now(), // si tu backend no devuelve el id
-            createdAt: new Date().toISOString().split('T')[0],
-          },
-          ...prev,
-        ]);
+        setCurrentPage(1);
+        setRefreshTrigger((prev) => prev + 1);
       }
 
       setIsCreateModalOpen(false);
@@ -468,6 +465,25 @@ export default function StorageBank() {
               )}
             </div>
           )}
+          <div className="flex justify-center mt-6 gap-4">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <span className="px-3 py-2 text-gray-700 dark:text-slate-300">
+              Página {currentPage} de {lastPage}
+            </span>
+            <button
+              disabled={currentPage === lastPage}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
         </div>
 
         {/* Create Question Modal */}
