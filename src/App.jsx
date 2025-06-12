@@ -19,6 +19,9 @@ import TeacherClassResults from './modules/teacher/pages/TeacherClassResults.jsx
 import TeacherClassMembers from './modules/teacher/pages/TeacherClassMembers.jsx';
 import TeacherClassChat from './modules/teacher/pages/TeacherClassChat.jsx';
 import StorageBank from './modules/teacher/pages/StorageBank.jsx';
+import DirectorLogin from './modules/director/pages/DirectorLogin.jsx';
+import DirectorRegister from './modules/director/pages/DirectorRegister.jsx';
+import DirectorDashboard from './modules/director/pages/DirectorDashboard.jsx';
 
 function App() {
   return (
@@ -61,6 +64,17 @@ function App() {
         <Route path="members" element={<TeacherClassMembers />} />
         <Route path="chat" element={<TeacherClassChat />} />
       </Route>
+
+      <Route path="/director/register" element={<DirectorRegister />} />
+      <Route path="/director/login" element={<DirectorLogin />} />
+      <Route
+        path="/director/dashboard"
+        element={
+          <ProtectedRoute role="director">
+            <DirectorDashboard />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
