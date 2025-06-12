@@ -19,7 +19,6 @@ import TeacherClassResults from './modules/teacher/pages/TeacherClassResults.jsx
 import TeacherClassMembers from './modules/teacher/pages/TeacherClassMembers.jsx';
 import TeacherClassChat from './modules/teacher/pages/TeacherClassChat.jsx';
 import StorageBank from './modules/teacher/pages/StorageBank.jsx';
-import AddExamPage from './modules/teacher/pages/AddExamPage';
 
 function App() {
   return (

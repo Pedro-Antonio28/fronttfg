@@ -34,6 +34,22 @@ const LoginBase = ({ role, redirectTo, registerLink, rol }) => {
     }
   };
 
+  // Links de cambio de rol (no mostrar el actual)
+  const altRoles = {
+    student: [
+      { to: '/teacher/login', label: 'Soy profesor' },
+      { to: '/director/login', label: 'Soy director' },
+    ],
+    teacher: [
+      { to: '/student/login', label: 'Soy alumno' },
+      { to: '/director/login', label: 'Soy director' },
+    ],
+    director: [
+      { to: '/student/login', label: 'Soy alumno' },
+      { to: '/teacher/login', label: 'Soy profesor' },
+    ],
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-purple-400 to-purple-200 overflow-hidden">
       {/* Fondo decorativo */}
@@ -90,23 +106,18 @@ const LoginBase = ({ role, redirectTo, registerLink, rol }) => {
             Regístrate aquí
           </Link>
         </div>
-        <div className="mt-4 text-center text-sm text-gray-600">
-          {role === 'teacher' && (
-            <Link
-              to="/student/login"
-              className="text-purple-600 hover:text-purple-800 font-medium transition"
-            >
-              Soy alumno
-            </Link>
-          )}
-          {role === 'student' && (
-            <Link
-              to="/teacher/login"
-              className="text-purple-600 hover:text-purple-800 font-medium transition"
-            >
-              Soy profesor
-            </Link>
-          )}
+
+        <div className="mt-4 text-center flex flex-row justify-around text-sm text-gray-600 space-y-1">
+          {altRoles[role]?.map((r) => (
+            <div key={r.to}>
+              <Link
+                to={r.to}
+                className="text-purple-600 hover:text-purple-800 font-medium transition"
+              >
+                {r.label}
+              </Link>
+            </div>
+          ))}
         </div>
       </motion.div>
     </div>
