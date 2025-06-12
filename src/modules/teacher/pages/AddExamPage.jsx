@@ -1,44 +1,21 @@
 import { useEffect, useState } from 'react';
 import CreateQuestionModal from '../components/CreateQuestionModal';
-import axios from "@/shared/functions/axiosConfig"; // usa tu config axios
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import axios from "@/shared/functions/axiosConfig";
+import { useParams, useNavigate } from "react-router-dom";
 import Layout from '../../../shared/components/Layout';
 import { motion, AnimatePresence } from "framer-motion";
 
 const AddExamPage = () => {
+  const { classId, examId } = useParams();
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [durationMinutes, setDurationMinutes] = useState("");
   const [preguntas, setPreguntas] = useState([]);
-  const { classId } = useParams();
   const [questionIds, setQuestionIds] = useState([]);
-  const navigate = useNavigate();
   const [almacenPreguntas, setAlmacenPreguntas] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(null);
-  const eliminarPregunta = (id) => {
-    setPreguntas((prev) => prev.filter((p) => p.id !== id));
-  };
-
-
-
-  const handleEditPregunta = (pregunta) => {
-    setQuestionForm({
-      title: pregunta.name || pregunta.title || "",
-      type: pregunta.type || "single",
-      content: pregunta.content || formatQuestionContent(pregunta.type, pregunta.answer || {}),
-      tags: (pregunta.tags || []).map((tag) =>
-        typeof tag === 'string' ? tag : tag.name ?? tag.value
-      ),
-    });
-
-    setCurrentQuestion(pregunta);
-    setShowModal(true);
-  };
-
-
-
-
   const [showModal, setShowModal] = useState(false);
   const [questionForm, setQuestionForm] = useState({
     title: "",
@@ -46,92 +23,6 @@ const AddExamPage = () => {
     tags: [],
     content: null,
   });
-
-  const formatQuestionContent = (type, content) => {
-    switch (type) {
-      case 'single':
-        return {
-          correct: content.correct_option,
-          options: content.options,
-        };
-
-      case 'multiple':
-        return {
-          correct: content.correct_options,
-          options: content.options,
-        };
-
-      case 'text':
-        return {
-          answer: content.answer,
-        };
-
-      case 'match':
-        return {
-          pairs: content.pairs,
-        };
-
-      case 'fill_blank':
-        return Object.entries(content)
-          .filter(([key]) => key.startsWith('blank_'))
-          .map(([, blank]) => ({
-            blanks: [blank.correctAnswer],
-            position: blank.number - 1,
-          }));
-
-      case 'fill_multiple':
-        return Object.entries(content)
-          .filter(([key]) => key.startsWith('blank_'))
-          .map(([, blank]) => ({
-            options: blank.options,
-            correct: blank.correct,
-            position: blank.number - 1,
-          }));
-
-      default:
-        return {};
-    }
-  };
-
-  useEffect(() => {
-    const cargarPreguntasBanco = async () => {
-      try {
-        const res = await axios.get("/teacher/bank-questions");
-
-        if (Array.isArray(res.data)) {
-          setAlmacenPreguntas(res.data);
-        } else if (Array.isArray(res.data.data)) {
-          setAlmacenPreguntas(res.data.data);
-        } else {
-          console.warn("Formato inesperado en respuesta del banco de preguntas:", res.data);
-          setAlmacenPreguntas([]);
-        }
-
-      } catch (error) {
-        console.error("Error al cargar preguntas del banco:", error);
-        setAlmacenPreguntas([]);
-      }
-    };
-
-
-    cargarPreguntasBanco();
-  }, []);
-
-  const añadirDesdeBanco = (pregunta) => {
-    if (!questionIds.includes(pregunta.id)) {
-      setPreguntas((prev) => [...prev, {
-        ...pregunta,
-        title: pregunta.title || pregunta.name || "",
-        type: pregunta.type || "single",
-        tags: pregunta.tags ?? [],
-      }]);
-      setQuestionIds((prev) => [...prev, pregunta.id]);
-    }
-  };
-
-
-
-
 
   const questionTypes = {
     single: { label: "Opción única" },
@@ -142,8 +33,108 @@ const AddExamPage = () => {
     fill_multiple: { label: "Huecos múltiples" },
   };
 
+  const formatQuestionContent = (type, content) => {
+    switch (type) {
+      case 'single':
+        return { correct: content.correct_option, options: content.options };
+      case 'multiple':
+        return { correct: content.correct_options, options: content.options };
+      case 'text':
+        return { answer: content.answer };
+      case 'match':
+        return { pairs: content.pairs };
+      case 'fill_blank':
+        return Object.entries(content)
+          .filter(([key]) => key.startsWith('blank_'))
+          .map(([, blank]) => ({ blanks: [blank.correctAnswer], position: blank.number - 1 }));
+      case 'fill_multiple':
+        return Object.entries(content)
+          .filter(([key]) => key.startsWith('blank_'))
+          .map(([, blank]) => ({ options: blank.options, correct: blank.correct, position: blank.number - 1 }));
+      default:
+        return {};
+    }
+  };
 
+  // Cargar datos del examen en modo edición
+  useEffect(() => {
+    if (examId) {
+      (async () => {
+        try {
+          const res = await axios.get(`/teacher/test/${examId}`);
+          const test = res.data;
+          setTitle(test.title);
+          setDate(test.exam_date);
+          setDurationMinutes(String(Number(test.total_seconds) / 60));
+          const loadedPregs = test.questions.map((q) => ({
+            id: q.id,
+            name: q.name,
+            type: q.type,
+            tags: (q.tags || []).map((tag) => (typeof tag === "string" ? tag : tag.name ?? tag.value)),
+            content: q.answer,
+          }));
+          setPreguntas(loadedPregs);
+          setQuestionIds(loadedPregs.map((q) => q.id));
+        } catch (error) {
+          console.error("Error cargando examen:", error);
+          alert("No se pudo cargar los datos del examen.");
+        }
+      })();
+    }
+  }, [examId]);
 
+  // Cargar preguntas del banco
+  useEffect(() => {
+    const cargarPreguntasBanco = async () => {
+      try {
+        const res = await axios.get("/teacher/bank-questions");
+        if (Array.isArray(res.data)) {
+          setAlmacenPreguntas(res.data);
+        } else if (Array.isArray(res.data.data)) {
+          setAlmacenPreguntas(res.data.data);
+        } else {
+          console.warn("Formato inesperado en respuesta del banco de preguntas:", res.data);
+          setAlmacenPreguntas([]);
+        }
+      } catch (error) {
+        console.error("Error al cargar preguntas del banco:", error);
+        setAlmacenPreguntas([]);
+      }
+    };
+    cargarPreguntasBanco();
+  }, []);
+
+  const añadirDesdeBanco = (pregunta) => {
+    if (!questionIds.includes(pregunta.id)) {
+      setPreguntas((prev) => [
+        ...prev,
+        {
+          id: pregunta.id,
+          name: pregunta.title || pregunta.name || "",
+          type: pregunta.type || "single",
+          tags: pregunta.tags ?? [],
+          content: pregunta.content || pregunta.answer,
+        },
+      ]);
+      setQuestionIds((prev) => [...prev, pregunta.id]);
+    }
+  };
+
+  const eliminarPregunta = (id) => {
+    setPreguntas((prev) => prev.filter((p) => p.id !== id));
+    setQuestionIds((prev) => prev.filter((pid) => pid !== id));
+  };
+
+  const handleEditPregunta = (pregunta) => {
+    setQuestionForm({
+      title: pregunta.name || pregunta.title || "",
+      type: pregunta.type || "single",
+      content: pregunta.content || formatQuestionContent(pregunta.type, pregunta.answer || {}),
+      tags: (pregunta.tags || []).map((tag) => (typeof tag === 'string' ? tag : tag.name ?? tag.value)),
+    });
+    setCurrentQuestion(pregunta);
+    setShowModal(true);
+  };
 
   const handleSaveQuestion = async () => {
     try {
@@ -156,20 +147,12 @@ const AddExamPage = () => {
       });
 
       setPreguntas((prev) => {
-        const nuevaPregunta = {
-          ...questionForm,
-          id: res.data.id,
-        };
-
-        // Si estamos editando, reemplaza la pregunta existente
+        const nuevaPregunta = { ...questionForm, id: res.data.id };
         if (currentQuestion && currentQuestion.id) {
           return prev.map((p) => (p.id === currentQuestion.id ? nuevaPregunta : p));
         }
-
-        // Si es nueva, añádela al final
         return [...prev, nuevaPregunta];
       });
-
 
       if (res?.data?.id) {
         setQuestionIds((prev) => [...prev, res.data.id]);
@@ -177,23 +160,14 @@ const AddExamPage = () => {
         console.warn("No se recibió un ID válido al guardar la pregunta", res);
       }
 
-
       setShowModal(false);
-
-      setQuestionForm({
-        title: "",
-        type: "",
-        tags: [],
-        content: null,
-      });
+      setQuestionForm({ title: "", type: "", tags: [], content: null });
+      setCurrentQuestion(null);
     } catch (error) {
       console.error("Error al guardar la pregunta:", error.response?.data || error);
       alert("Error al guardar la pregunta. Verifica el contenido o el formato.");
     }
   };
-
-
-  const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
   const handleSaveExam = async () => {
     try {
@@ -202,36 +176,40 @@ const AddExamPage = () => {
         return;
       }
 
-      await delay(500); // esperar a que las preguntas estén persistidas
-
-      const examRes = await axios.post("/teacher/test", {
-        title: title.trim(),
-        class_id: classId,
-        exam_date: date,
-        total_seconds: String(Number(durationMinutes) * 60),
-      });
-
-
-      const testId = examRes.data.id;
-
-      // Asignar test_id a las preguntas
-      await axios.post("/teacher/question/assign-test", {
-        question_ids: questionIds,
-        test_id: testId,
-      });
-
-      alert("Examen guardado y preguntas asignadas con éxito 🎉");
+      if (examId) {
+        await axios.put(`/teacher/test/${examId}`, {
+          title: title.trim(),
+          class_id: classId,
+          exam_date: date,
+          total_seconds: String(Number(durationMinutes) * 60),
+          question_ids: questionIds,
+        });
+        alert("Examen actualizado con éxito 🎉");
+      } else {
+        await new Promise((res) => setTimeout(res, 500));
+        const examRes = await axios.post("/teacher/test", {
+          title: title.trim(),
+          class_id: classId,
+          exam_date: date,
+          total_seconds: String(Number(durationMinutes) * 60),
+        });
+        const testId = examRes.data.id;
+        await axios.post("/teacher/question/assign-test", {
+          question_ids: questionIds,
+          test_id: testId,
+        });
+        alert("Examen guardado y preguntas asignadas con éxito 🎉");
+      }
 
       navigate(`/teacher/class/${classId}/activities`);
-
     } catch (error) {
       console.error("Error al guardar el examen:", error.response?.data || error);
       if (error.response?.data?.errors) {
         alert(
           "Error de validación: " +
           Object.entries(error.response.data.errors)
-            .map(([campo, msgs]) => `${campo}: ${msgs.join(', ')}`)
-            .join(' | ')
+            .map(([campo, msgs]) => `${campo}: ${msgs.join(", ")}`)
+            .join(" | ")
         );
       } else if (error.response?.data?.error) {
         alert("Error: " + error.response.data.error);
@@ -241,12 +219,7 @@ const AddExamPage = () => {
     }
   };
 
-
-
-
-
-  const tagOptions = []; // Puedes pasarle aquí opciones si las tienes
-
+  const tagOptions = [];
 
 
   return (
@@ -271,7 +244,7 @@ const AddExamPage = () => {
             transition={{ delay: 0.2 }}
             className="text-4xl font-extrabold text-center text-[#7B61FF] drop-shadow-sm"
           >
-            Crear Examen
+            {examId ? "Editar Examen" : "Crear Examen"}
           </motion.h1>
 
           <div className="md:flex gap-8">
@@ -307,9 +280,8 @@ const AddExamPage = () => {
                 />
               </div>
 
-              {/* Añadir pregunta */}
-              <motion.div whileHover={{ scale: 1.01 }}
-                          className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition">
+              {/* Sección preguntas */}
+              <motion.div whileHover={{ scale: 1.01 }} className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition">
                 <div className="flex justify-between items-center">
                   <h2 className="text-lg font-semibold text-[#7B61FF]">Preguntas del examen</h2>
                   <button
@@ -394,16 +366,16 @@ const AddExamPage = () => {
                     ))}
                   </AnimatePresence>
                 </div>
-              </div>
 
-              <motion.div whileHover={{ scale: 1.03 }} className="text-center">
-                <button
-                  onClick={handleSaveExam}
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-bold shadow"
-                >
-                  ✅ Guardar examen
-                </button>
-              </motion.div>
+                <motion.div whileHover={{ scale: 1.03 }} className="text-center mt-2">
+                  <button
+                    onClick={handleSaveExam}
+                    className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-bold shadow"
+                  >
+                    ✅ {examId ? 'Actualizar Examen' : 'Guardar Examen'}
+                  </button>
+                </motion.div>
+              </div>
             </motion.div>
           </div>
 
@@ -429,9 +401,6 @@ const AddExamPage = () => {
       </div>
     </Layout>
   );
-
-
-
 };
 
 export default AddExamPage;

@@ -86,6 +86,7 @@ const ClassActivitiesBase = ({ useClassHook, showAddButton = false, onAddClick }
                                     initial={{opacity: 0, x: -10}}
                                     animate={{opacity: 1, x: 0}}
                                     transition={{delay: index * 0.04}}
+                                    onClick={() => window.location.href = `/teacher/class/${classId}/exam/${test.id}`}
                                     className={`group border-l-4 ${
                                       isToday(test.exam_date)
                                         ? "border-red-500 bg-red-50 dark:bg-red-900/10"

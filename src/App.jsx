@@ -66,7 +66,7 @@ function App() {
         <Route path="chat" element={<TeacherClassChat />} />
       </Route>
       <Route path="/teacher/class/:classId/add-exam" element={<AddExamPage />} />
-
+      <Route path="/teacher/class/:classId/exam/:examId" element={<AddExamPage />} />
 
 
 
