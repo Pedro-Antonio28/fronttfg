@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, School, Hash, Phone, Building2 } from 'lucide-react';
 import logo from '@/shared/assets/images/logo.png';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/shared/contexts/AuthContext';
@@ -8,12 +8,19 @@ import { useAuth } from '@/shared/contexts/AuthContext';
 const RegisterBase = ({ role, redirectTo, loginRoute, rol }) => {
   const navigate = useNavigate();
   const { register } = useAuth();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
+    school_name: '',
+    school_code: '',
+    school_email: '',
+    school_tel: '',
+    school_type: '',
   });
+
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState('');
 
@@ -27,7 +34,7 @@ const RegisterBase = ({ role, redirectTo, loginRoute, rol }) => {
     setErrors({});
     setSuccess('');
     try {
-      await register(formData, role);
+      await register({ ...formData }, role);
       setSuccess('Usuario registrado correctamente');
       navigate(redirectTo);
     } catch (err) {
@@ -39,10 +46,24 @@ const RegisterBase = ({ role, redirectTo, loginRoute, rol }) => {
     }
   };
 
+  const altRoles = {
+    student: [
+      { to: '/teacher/register', label: 'Soy profesor' },
+      { to: '/director/register', label: 'Soy director' },
+    ],
+    teacher: [
+      { to: '/student/register', label: 'Soy alumno' },
+      { to: '/director/register', label: 'Soy director' },
+    ],
+    director: [
+      { to: '/student/register', label: 'Soy alumno' },
+      { to: '/teacher/register', label: 'Soy profesor' },
+    ],
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-purple-400 to-purple-200 overflow-hidden">
       <div className="absolute inset-0 w-full h-full overflow-hidden -z-10">
-        {/* Burbujas animadas */}
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
@@ -110,6 +131,61 @@ const RegisterBase = ({ role, redirectTo, loginRoute, rol }) => {
             error={errors.password_confirmation}
           />
 
+          {role === 'director' && (
+            <>
+              <InputField
+                icon={<School />}
+                name="school_name"
+                placeholder="Nombre del centro"
+                value={formData.school_name}
+                onChange={handleChange}
+                required
+                error={errors.school_name}
+              />
+              <InputField
+                icon={<Hash />}
+                name="school_code"
+                placeholder="Código del centro"
+                value={formData.school_code}
+                onChange={handleChange}
+                required
+                error={errors.school_code}
+              />
+              <InputField
+                icon={<Mail />}
+                name="school_email"
+                type="email"
+                placeholder="Email del centro"
+                value={formData.school_email}
+                onChange={handleChange}
+                required
+                error={errors.school_email}
+              />
+              <InputField
+                icon={<Phone />}
+                name="school_tel"
+                placeholder="Teléfono del centro"
+                value={formData.school_tel}
+                onChange={handleChange}
+                required
+                error={errors.school_tel}
+              />
+              <SelectField
+                icon={<Building2 />}
+                name="school_type"
+                value={formData.school_type}
+                onChange={handleChange}
+                error={errors.school_type}
+                required
+                options={[
+                  { value: '', label: 'Selecciona tipo de centro' },
+                  { value: 'Público', label: 'Público' },
+                  { value: 'Privado', label: 'Privado' },
+                ]}
+              />
+            </>
+          )}
+
           {errors.general && <p className="text-red-500 text-center">{errors.general}</p>}
           {success && <p className="text-green-600 text-center">{success}</p>}
 
@@ -130,38 +206,50 @@ const RegisterBase = ({ role, redirectTo, loginRoute, rol }) => {
             Inicia sesión aquí
           </Link>
         </div>
-        <div className="mt-4 text-center text-sm text-gray-600">
-          {role === 'teacher' && (
-            <Link
-              to="/student/register"
-              className="text-purple-600 hover:text-purple-800 font-medium transition"
-            >
-              Soy alumno
-            </Link>
-          )}
-          {role === 'student' && (
-            <Link
-              to="/teacher/register"
-              className="text-purple-600 hover:text-purple-800 font-medium transition"
-            >
-              Soy profesor
-            </Link>
-          )}
+
+        <div className="mt-4 text-center flex flex-row justify-around text-sm text-gray-600 space-y-1">
+          {altRoles[role]?.map((r) => (
+            <div key={r.to}>
+              <Link
+                to={r.to}
+                className="text-purple-600 hover:text-purple-800 font-medium transition"
+              >
+                {r.label}
+              </Link>
+            </div>
+          ))}
         </div>
       </motion.div>
     </div>
   );
 };
 
+// InputField común
 const InputField = ({ icon, error, ...props }) => (
   <div className="relative">
-    <div className="absolute left-3 top-3 text-purple-400">{icon}</div>
+    {icon && <div className="absolute left-3 top-3 text-purple-400">{icon}</div>}
     <input
       {...props}
-      className={`pl-10 w-full border ${
-        error ? 'border-red-400' : 'border-gray-300'
-      } p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition`}
+      className={`w-full ${icon ? 'pl-10' : 'pl-3'} border ${error ? 'border-red-400' : 'border-gray-300'} p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition`}
     />
+    {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+  </div>
+);
+
+// SelectField para school_type
+const SelectField = ({ icon, error, options, ...props }) => (
+  <div className="relative">
+    {icon && <div className="absolute left-3 top-3 text-purple-400">{icon}</div>}
+    <select
+      {...props}
+      className={`w-full ${icon ? 'pl-10' : 'pl-3'} border ${error ? 'border-red-400' : 'border-gray-300'} p-3 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 transition`}
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
 );
