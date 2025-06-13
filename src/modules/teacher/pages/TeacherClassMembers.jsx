@@ -1,10 +1,8 @@
+import ClassMembersBase from '../../../shared/components/ClassMembersBase.jsx';
+import { useClass } from '../services/ClassContext.jsx';
+
 const TeacherClassMembers = () => {
-  return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Participantes</h2>
-      <p>Aquí aparecerán los miembros de la clase.</p>
-    </div>
-  );
+  return <ClassMembersBase useClassHook={useClass} userRole="teacher" />;
 };
 
 export default TeacherClassMembers;
