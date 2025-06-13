@@ -6,6 +6,7 @@ import ClassesGrid from '../../../shared/components/ClassesGrid.jsx';
 const TeacherDashboard = () => {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -20,7 +21,7 @@ const TeacherDashboard = () => {
     };
 
     loadDashboard();
-  }, []);
+  }, [refreshTrigger]);
 
   if (loading) {
     return (
@@ -40,7 +41,12 @@ const TeacherDashboard = () => {
           </p>
         </div>
 
-        <ClassesGrid classes={classes} rol="teacher" />
+        <ClassesGrid
+          classes={classes}
+          rol="teacher"
+          showAddButton={true}
+          onClassCreated={() => setRefreshTrigger((prev) => prev + 1)}
+        />
       </div>
       {/* <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-purple-700">Tus clases</h1>
