@@ -9,19 +9,29 @@ const CreateClassModal = ({ isOpen, onClose, onCreated }) => {
   const [error, setError] = useState('');
 
   const handleCreate = async () => {
+    if (!name.trim()) {
+      setError('El nombre de la clase es obligatorio');
+      return;
+    }
+    const finalColor = color?.trim() || '#000000';
     setLoading(true);
     setError('');
     try {
       const response = await axios.post('/teacher/classes', {
-        name,
-        color,
+        name: name.trim(),
+        color: finalColor,
       });
       onCreated?.(response.data); // puedes actualizar la lista de clases si pasas este callback
       onClose();
       setName('');
-      setColor('');
+      setColor('#000000');
     } catch (err) {
-      setError('Error al crear la clase');
+      if (err.response?.status === 422) {
+        const firstError = err.response.data.errors?.name?.[0] || 'Error de validación.';
+        setError(firstError);
+      } else {
+        setError('Error al crear la clase');
+      }
     } finally {
       setLoading(false);
     }
