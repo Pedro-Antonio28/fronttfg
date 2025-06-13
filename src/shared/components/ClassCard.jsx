@@ -30,7 +30,10 @@ const CardFooter = ({ className, children, ...props }) => (
 );
 
 const Avatar = ({ className, children, ...props }) => (
-  <div className={`relative flex shrink-0 overflow-hidden rounded-full ${className || ''}`} {...props}>
+  <div
+    className={`relative flex shrink-0 overflow-hidden rounded-full ${className || ''}`}
+    {...props}
+  >
     {children}
   </div>
 );
@@ -92,12 +95,31 @@ export default function ClassCard({ classItem, index, rol }) {
     document.title = classItem.class_name;
 
     const baseRoute =
-      rol === 'teacher' ? '/teacher/class/' :
-      rol === 'director' ? '/director/class/' :
-      '/student/class/';
+      rol === 'teacher'
+        ? '/teacher/class/'
+        : rol === 'director'
+          ? '/director/class/'
+          : '/student/class/';
 
     navigate(`${baseRoute}${classItem.id}`);
   };
+
+  function adjustColorBrightness(hex, amount) {
+    return (
+      '#' +
+      hex
+        .replace(/^#/, '')
+        .replace(/../g, (color) =>
+          ('0' + Math.max(0, Math.min(255, parseInt(color, 16) + amount)).toString(16)).slice(-2)
+        )
+    );
+  }
+
+  const baseColor = classItem.color || '#6d28d9';
+  const fromLight = adjustColorBrightness(baseColor, 60); // un poco más claro
+  const toLight = adjustColorBrightness(baseColor, -20); // base
+  const fromDark = adjustColorBrightness(baseColor, -40); // más oscuro
+  const toDark = adjustColorBrightness(baseColor, -80); // aún más oscuro
 
   return (
     <motion.div
@@ -109,22 +131,25 @@ export default function ClassCard({ classItem, index, rol }) {
     >
       <div onClick={goToClass} className="block cursor-pointer">
         <Card className="overflow-hidden bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-          <CardHeader className="p-0">
-            <motion.div
-              className="h-24 w-full bg-gradient-to-r from-purple-500 to-purple-700 dark:from-purple-700 dark:to-purple-900"
+          <CardHeader className="p-0 relative">
+            {/* Claro */}
+            <div
+              className="h-24 w-full block dark:hidden"
               style={{
-                backgroundImage: classItem.backgroundImage
-                  ? `linear-gradient(rgba(109, 40, 217, 0.8), rgba(109, 40, 217, 0.8)), url(${classItem.backgroundImage})`
-                  : undefined,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                backgroundImage: `linear-gradient(to right, ${fromDark}, ${toDark})`,
               }}
-              whileHover={{
-                backgroundPosition: 'center 45%',
-                transition: { duration: 3 },
+            />
+
+            {/* Oscuro */}
+            <div
+              className="h-24 w-full hidden dark:block"
+              style={{
+                backgroundImage: `linear-gradient(to right, ${fromLight}, ${toLight})`,
+                filter: 'brightness(0.7)',
               }}
             />
           </CardHeader>
+
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <motion.div
@@ -134,7 +159,12 @@ export default function ClassCard({ classItem, index, rol }) {
               >
                 <Avatar className="h-16 w-16 border-4 border-white -mt-12 shadow-sm">
                   <AvatarImage src={classItem.teacherImage || imagenPrueba} alt="profesor" />
-                  <AvatarFallback className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200">
+                  <AvatarFallback
+                    className="text-white"
+                    style={{
+                      backgroundColor: classItem.color || '#6d28d9',
+                    }}
+                  >
                     {getInitials('Jose Luis Torrente')}
                   </AvatarFallback>
                 </Avatar>
