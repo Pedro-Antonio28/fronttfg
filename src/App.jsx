@@ -23,7 +23,6 @@ import DirectorLogin from './modules/director/pages/DirectorLogin.jsx';
 import DirectorRegister from './modules/director/pages/DirectorRegister.jsx';
 import DirectorDashboard from './modules/director/pages/DirectorDashboard.jsx';
 import AddExamPage from './modules/teacher/pages/AddExamPage.jsx';
-import StudentProfile from "./modules/student/pages/StudentProfile.jsx";
 
 function App() {
   return (
@@ -81,7 +80,6 @@ function App() {
           </ProtectedRoute>
         }
       />
-        <Route path="/profile/" element={<StudentProfile />} />
     </Routes>
   );
 }
