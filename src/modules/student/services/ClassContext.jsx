@@ -21,6 +21,7 @@ export const ClassProvider = ({ children }) => {
     try {
       const response = await axios.get(`/student/class/${classId}/results`);
       setResults(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error('Error fetching results:', error);
     } finally {

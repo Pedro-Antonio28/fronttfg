@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import imagenPrueba from '@/shared/assets/images/imagenPrueba.jpeg';
+import { PieChart, Pie, Cell } from 'recharts';
 
 const Card = ({ className, children, ...props }) => (
   <div className={`rounded-lg bg-white shadow-sm ${className || ''}`} {...props}>
@@ -121,6 +122,14 @@ export default function ClassCard({ classItem, index, rol }) {
   const fromDark = adjustColorBrightness(baseColor, -40); // más oscuro
   const toDark = adjustColorBrightness(baseColor, -80); // aún más oscuro
 
+  const mark = Math.min(Math.max(classItem.mark ?? 0, 0), 10); // aseguramos que esté entre 0 y 10
+  const pieData = [
+    { name: 'Nota', value: mark },
+    { name: 'Restante', value: 10 - mark },
+  ];
+
+  const pieColors = [baseColor, '#e5e7eb']; // color y gris claro
+
   return (
     <motion.div
       variants={item}
@@ -151,27 +160,43 @@ export default function ClassCard({ classItem, index, rol }) {
           </CardHeader>
 
           <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <motion.div
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 + index * 0.1 }}
-              >
-                <Avatar className="h-16 w-16 border-4 border-white -mt-12 shadow-sm">
-                  <AvatarImage src={classItem.teacherImage || imagenPrueba} alt="profesor" />
-                  <AvatarFallback
-                    className="text-white"
-                    style={{
-                      backgroundColor: classItem.color || '#6d28d9',
-                    }}
+            <div className="flex justify-between items-center">
+              <div className="flex items-start gap-4">
+                <motion.div
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
+                >
+                  <Avatar className="h-16 w-16 border-4 border-white -mt-12 shadow-sm">
+                    <AvatarImage src={classItem.teacherImage || imagenPrueba} alt="profesor" />
+                    <AvatarFallback className="text-white" style={{ backgroundColor: baseColor }}>
+                      {getInitials('Jose Luis Torrente')}
+                    </AvatarFallback>
+                  </Avatar>
+                </motion.div>
+                <div className="flex-1 pt-1">
+                  <h3 className="font-semibold text-lg">{classItem.class_name}</h3>
+                  <p className="text-sm text-muted-foreground">Prof. Jose Luis Torrente</p>
+                </div>
+              </div>
+
+              {/* Pie chart */}
+              <div className="flex flex-col items-center justify-center w-20">
+                <PieChart width={60} height={60}>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    startAngle={90}
+                    endAngle={-270}
+                    innerRadius={20}
+                    outerRadius={30}
                   >
-                    {getInitials('Jose Luis Torrente')}
-                  </AvatarFallback>
-                </Avatar>
-              </motion.div>
-              <div className="flex-1 pt-1">
-                <h3 className="font-semibold text-lg">{classItem.class_name}</h3>
-                <p className="text-sm text-muted-foreground">Prof. Jose Luis Torrente</p>
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={pieColors[index]} />
+                    ))}
+                  </Pie>
+                </PieChart>
+                <span className="text-xs text-muted-foreground mt-1">{mark.toFixed(1)}/10</span>
               </div>
             </div>
           </CardContent>
