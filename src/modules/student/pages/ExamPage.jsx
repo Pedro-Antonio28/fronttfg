@@ -1,5 +1,5 @@
-'use client';
-
+import { useParams } from 'react-router-dom';
+import axios from '@/shared/functions/axiosConfig';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ExamHeader from '../components/ExamHeader';
@@ -22,100 +22,30 @@ export default function ExamPage() {
   const [loading, setLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState(3600); // 60 minutos por defecto
 
-  // Simulación de carga de datos del examen
+  const { classId } = useParams();
+  const { examId } = useParams(); // asegúrate de tener esta parte en tu ruta: /class/:classId/exam/:examId
+
   useEffect(() => {
-    // En un caso real, aquí harías la petición a la API
-    const mockExamData = {
-      id: 1,
-      title: 'Examen de Conocimientos Generales',
-      duration: 3600, // 60 minutos en segundos
-      questions: [
-        {
-          id: 1,
-          title: '¿Cuál es la capital de Francia?',
-          type: 'single',
-          content: {
-            options: ['Londres', 'París', 'Madrid', 'Berlín'],
-            correct_option: 1,
-          },
-        },
-        {
-          id: 2,
-          title: 'Selecciona los lenguajes de programación',
-          type: 'multiple',
-          content: {
-            options: ['HTML', 'Python', 'JavaScript', 'CSS'],
-            correct_options: [1, 2],
-          },
-        },
-        {
-          id: 3,
-          title: 'Explica el proceso de fotosíntesis',
-          type: 'text',
-          content: {},
-        },
-        {
-          id: 4,
-          title: 'Relaciona los países con sus capitales',
-          type: 'match',
-          content: {
-            pairs: [
-              { left: 'España', right: 'Madrid' },
-              { left: 'Italia', right: 'Roma' },
-            ],
-          },
-        },
-        {
-          id: 5,
-          title: 'El [🔲1] es el satélite de la Tierra. Y su proclamador se llamaba [🔲2].',
-          type: 'fill_blank',
-          content: {
-            blank_123: {
-              id: 'blank_123',
-              number: 1,
-              correctAnswer: 'Luna',
-            },
-            blank_456: {
-              id: 'blank_456',
-              number: 2,
-              correctAnswer: 'Jose Luis',
-            },
-          },
-        },
-        {
-          id: 6,
-          title: 'El [🔲1] procesa los datos. Donde más se guardan cosas es en la [🔲2].',
-          type: 'fill_multiple',
-          content: {
-            blank_789: {
-              id: 'blank_789',
-              number: 1,
-              options: ['CPU', 'Monitor', 'Teclado'],
-              correct: 0,
-            },
-            blank_101: {
-              id: 'blank_101',
-              number: 2,
-              options: ['CPU', 'Cache', 'LocalStorage'],
-              correct: 1,
-            },
-          },
-        },
-      ],
+    const fetchExam = async () => {
+      try {
+        const { data } = await axios.get(`/student/class/${classId}/exam/${examId}`);
+        setExamData(data);
+        setTimeRemaining(data.duration || 3600); // si viene del backend
+        setLoading(false);
+        console.log(data);
+        // Inicializar respuestas
+        const initialAnswers = {};
+        data.questions.forEach((q) => {
+          initialAnswers[q.id] = null;
+        });
+        setAnswers(initialAnswers);
+      } catch (error) {
+        console.error('Error al cargar el examen:', error);
+        // puedes redirigir a error o mostrar un mensaje
+      }
     };
 
-    setTimeout(() => {
-      setExamData(mockExamData);
-      setTimeRemaining(mockExamData.duration);
-      setLoading(false);
-
-      // Inicializar el objeto de respuestas
-      const initialAnswers = {};
-      mockExamData.questions.forEach((question) => {
-        initialAnswers[question.id] = null;
-      });
-      setAnswers(initialAnswers);
-    }, 1000);
+    fetchExam();
   }, []);
 
   // Contador de tiempo
