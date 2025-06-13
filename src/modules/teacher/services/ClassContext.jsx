@@ -11,30 +11,29 @@ export const ClassProvider = ({ children }) => {
   const [results, setResults] = useState([]);
   const [activities, setActivities] = useState([]);
   const [participants, setParticipants] = useState([]);
-  const [joinCode, setJoinCode] = useState(null);    
+  const [joinCode, setJoinCode] = useState(null);
 
   const [loadingResults, setLoadingResults] = useState(false);
   const [loadingActivities, setLoadingActivities] = useState(false);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
   const [loadingCode, setLoadingCode] = useState(false);
-  
-    const fetchJoinCode = async () => {
-      try {
-        setLoadingCode(true);
-        const { data } = await axios.get(`/teacher/class/${classId}/join-code`);
-        setJoinCode(data.code);
-      } catch (err) {
-        setJoinCode("Error al obtener el código");
-      } finally {
-        setLoadingCode(false);
-      }
-    };
-  
-    const copyToClipboard = () => {
-      navigator.clipboard.writeText(joinCode);
-    };
+  const rol = 'teacher';
 
+  const fetchJoinCode = async () => {
+    try {
+      setLoadingCode(true);
+      const { data } = await axios.get(`/teacher/class/${classId}/join-code`);
+      setJoinCode(data.code);
+    } catch (err) {
+      setJoinCode('Error al obtener el código');
+    } finally {
+      setLoadingCode(false);
+    }
+  };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(joinCode);
+  };
 
   const fetchResults = async () => {
     setLoadingResults(true);
@@ -89,7 +88,8 @@ export const ClassProvider = ({ children }) => {
         loadingResults,
         loadingActivities,
         loadingParticipants,
-        loadingCode
+        loadingCode,
+        rol,
       }}
     >
       {children}

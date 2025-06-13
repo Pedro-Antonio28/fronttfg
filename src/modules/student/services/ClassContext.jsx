@@ -15,6 +15,7 @@ export const ClassProvider = ({ children }) => {
   const [loadingResults, setLoadingResults] = useState(false);
   const [loadingActivities, setLoadingActivities] = useState(false);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
+  const rol = 'student';
 
   const fetchResults = async () => {
     setLoadingResults(true);
@@ -66,6 +67,7 @@ export const ClassProvider = ({ children }) => {
         loadingResults,
         loadingActivities,
         loadingParticipants,
+        rol,
       }}
     >
       {children}
