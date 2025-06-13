@@ -6,13 +6,17 @@ import ClassesGrid from '../../../shared/components/ClassesGrid.jsx';
 const TeacherDashboard = () => {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const loadDashboard = async () => {
       try {
-        const data = await fetchDashboard();
-        setClasses(data);
+        const data = await fetchDashboard(currentPage);
+        setClasses(data.data);
+        setLastPage(data.meta.last_page);
+        console.log(data);
       } catch (error) {
         // ya se maneja el error en el servicio
       } finally {
@@ -21,7 +25,7 @@ const TeacherDashboard = () => {
     };
 
     loadDashboard();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, currentPage]);
 
   if (loading) {
     return (
@@ -45,8 +49,32 @@ const TeacherDashboard = () => {
           classes={classes}
           rol="teacher"
           showAddButton={true}
-          onClassCreated={() => setRefreshTrigger((prev) => prev + 1)}
+          onClassCreated={() => {
+            setCurrentPage(1); // Volver a la primera página al crear
+            setRefreshTrigger((prev) => prev + 1);
+          }}
         />
+
+        {/* Paginación */}
+        <div className="flex justify-center mt-6 gap-4">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+            className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <span className="px-3 py-2 text-gray-700 dark:text-slate-300">
+            Página {currentPage} de {lastPage}
+          </span>
+          <button
+            disabled={currentPage === lastPage}
+            onClick={() => setCurrentPage(currentPage + 1)}
+            className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
       </div>
       {/* <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-purple-700">Tus clases</h1>
