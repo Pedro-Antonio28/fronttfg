@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Calendar from './Calendar';
-import { CalendarDays, Timer } from 'lucide-react';
+import { CalendarDays, Timer, Lock, Unlock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -70,6 +70,7 @@ const ClassActivitiesBase = ({ useClassHook, showAddButton = false, onAddClick }
                     <tr className="text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
                       <th className="py-2 px-3 font-semibold">Título</th>
                       <th className="py-2 px-3 font-semibold">Fecha</th>
+                      <th className="py-2 px-3 font-semibold text-center">Estado</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -79,7 +80,12 @@ const ClassActivitiesBase = ({ useClassHook, showAddButton = false, onAddClick }
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.04 }}
-                        onClick={() => navigate(`/${rol}/class/${classId}/exam/${test.id}`)}
+                        onClick={() => {
+                          if (rol === 'student' && !test.is_published) {
+                            return;
+                          }
+                          navigate(`/${rol}/class/${classId}/exam/${test.id}`);
+                        }}
                         className={`group border-l-4 ${
                           isToday(test.exam_date)
                             ? 'border-red-500 bg-red-50 dark:bg-red-900/10'
@@ -93,6 +99,13 @@ const ClassActivitiesBase = ({ useClassHook, showAddButton = false, onAddClick }
                             <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                               Hoy
                             </span>
+                          )}
+                        </td>
+                        <td className="py-2 px-3 text-center">
+                          {test.is_published ? (
+                            <Unlock className="inline w-5 h-5 text-green-500" title="Publicado" />
+                          ) : (
+                            <Lock className="inline w-5 h-5 text-red-500" title="Borrador" />
                           )}
                         </td>
                       </motion.tr>

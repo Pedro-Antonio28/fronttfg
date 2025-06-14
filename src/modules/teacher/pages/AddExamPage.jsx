@@ -1,36 +1,38 @@
 import { useEffect, useState } from 'react';
 import CreateQuestionModal from '../components/CreateQuestionModal';
-import axios from "@/shared/functions/axiosConfig";
-import { useParams, useNavigate } from "react-router-dom";
+import axios from '@/shared/functions/axiosConfig';
+import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../../../shared/components/Layout';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Lock, Unlock } from 'lucide-react';
 
 const AddExamPage = () => {
   const { classId, examId } = useParams();
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
-  const [durationMinutes, setDurationMinutes] = useState("");
+  const [title, setTitle] = useState('');
+  const [isPublished, setIsPublished] = useState(false);
+  const [date, setDate] = useState('');
+  const [durationMinutes, setDurationMinutes] = useState('');
   const [preguntas, setPreguntas] = useState([]);
   const [questionIds, setQuestionIds] = useState([]);
   const [almacenPreguntas, setAlmacenPreguntas] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [questionForm, setQuestionForm] = useState({
-    title: "",
-    type: "",
+    title: '',
+    type: '',
     tags: [],
     content: null,
   });
 
   const questionTypes = {
-    single: { label: "Opción única" },
-    multiple: { label: "Opción múltiple" },
-    text: { label: "Respuesta de texto" },
-    match: { label: "Emparejamiento" },
-    fill_blank: { label: "Rellenar hueco" },
-    fill_multiple: { label: "Huecos múltiples" },
+    single: { label: 'Opción única' },
+    multiple: { label: 'Opción múltiple' },
+    text: { label: 'Respuesta de texto' },
+    match: { label: 'Emparejamiento' },
+    fill_blank: { label: 'Rellenar hueco' },
+    fill_multiple: { label: 'Huecos múltiples' },
   };
 
   const formatQuestionContent = (type, content) => {
@@ -50,7 +52,11 @@ const AddExamPage = () => {
       case 'fill_multiple':
         return Object.entries(content)
           .filter(([key]) => key.startsWith('blank_'))
-          .map(([, blank]) => ({ options: blank.options, correct: blank.correct, position: blank.number - 1 }));
+          .map(([, blank]) => ({
+            options: blank.options,
+            correct: blank.correct,
+            position: blank.number - 1,
+          }));
       default:
         return {};
     }
@@ -64,20 +70,23 @@ const AddExamPage = () => {
           const res = await axios.get(`/teacher/test/${examId}`);
           const test = res.data;
           setTitle(test.title);
+          setIsPublished(!!test.state);
           setDate(test.exam_date);
           setDurationMinutes(String(Number(test.total_seconds) / 60));
           const loadedPregs = test.questions.map((q) => ({
             id: q.id,
             name: q.name,
             type: q.type,
-            tags: (q.tags || []).map((tag) => (typeof tag === "string" ? tag : tag.name ?? tag.value)),
+            tags: (q.tags || []).map((tag) =>
+              typeof tag === 'string' ? tag : (tag.name ?? tag.value)
+            ),
             content: q.answer,
           }));
           setPreguntas(loadedPregs);
           setQuestionIds(loadedPregs.map((q) => q.id));
         } catch (error) {
-          console.error("Error cargando examen:", error);
-          alert("No se pudo cargar los datos del examen.");
+          console.error('Error cargando examen:', error);
+          alert('No se pudo cargar los datos del examen.');
         }
       })();
     }
@@ -87,17 +96,17 @@ const AddExamPage = () => {
   useEffect(() => {
     const cargarPreguntasBanco = async () => {
       try {
-        const res = await axios.get("/teacher/bank-questions");
+        const res = await axios.get('/teacher/bank-questions');
         if (Array.isArray(res.data)) {
           setAlmacenPreguntas(res.data);
         } else if (Array.isArray(res.data.data)) {
           setAlmacenPreguntas(res.data.data);
         } else {
-          console.warn("Formato inesperado en respuesta del banco de preguntas:", res.data);
+          console.warn('Formato inesperado en respuesta del banco de preguntas:', res.data);
           setAlmacenPreguntas([]);
         }
       } catch (error) {
-        console.error("Error al cargar preguntas del banco:", error);
+        console.error('Error al cargar preguntas del banco:', error);
         setAlmacenPreguntas([]);
       }
     };
@@ -110,8 +119,8 @@ const AddExamPage = () => {
         ...prev,
         {
           id: pregunta.id,
-          name: pregunta.title || pregunta.name || "",
-          type: pregunta.type || "single",
+          name: pregunta.title || pregunta.name || '',
+          type: pregunta.type || 'single',
           tags: pregunta.tags ?? [],
           content: pregunta.content || pregunta.answer,
         },
@@ -127,10 +136,12 @@ const AddExamPage = () => {
 
   const handleEditPregunta = (pregunta) => {
     setQuestionForm({
-      title: pregunta.name || pregunta.title || "",
-      type: pregunta.type || "single",
+      title: pregunta.name || pregunta.title || '',
+      type: pregunta.type || 'single',
       content: pregunta.content || formatQuestionContent(pregunta.type, pregunta.answer || {}),
-      tags: (pregunta.tags || []).map((tag) => (typeof tag === 'string' ? tag : tag.name ?? tag.value)),
+      tags: (pregunta.tags || []).map((tag) =>
+        typeof tag === 'string' ? tag : (tag.name ?? tag.value)
+      ),
     });
     setCurrentQuestion(pregunta);
     setShowModal(true);
@@ -138,12 +149,12 @@ const AddExamPage = () => {
 
   const handleSaveQuestion = async () => {
     try {
-      const res = await axios.post("/teacher/question", {
+      const res = await axios.post('/teacher/question', {
         name: questionForm.title.trim(),
         type: questionForm.type,
         tags: questionForm.tags ?? [],
         answer: formatQuestionContent(questionForm.type, questionForm.content),
-        return: "full",
+        return: 'full',
       });
 
       setPreguntas((prev) => {
@@ -157,22 +168,22 @@ const AddExamPage = () => {
       if (res?.data?.id) {
         setQuestionIds((prev) => [...prev, res.data.id]);
       } else {
-        console.warn("No se recibió un ID válido al guardar la pregunta", res);
+        console.warn('No se recibió un ID válido al guardar la pregunta', res);
       }
 
       setShowModal(false);
-      setQuestionForm({ title: "", type: "", tags: [], content: null });
+      setQuestionForm({ title: '', type: '', tags: [], content: null });
       setCurrentQuestion(null);
     } catch (error) {
-      console.error("Error al guardar la pregunta:", error.response?.data || error);
-      alert("Error al guardar la pregunta. Verifica el contenido o el formato.");
+      console.error('Error al guardar la pregunta:', error.response?.data || error);
+      alert('Error al guardar la pregunta. Verifica el contenido o el formato.');
     }
   };
 
   const handleSaveExam = async () => {
     try {
       if (!title.trim() || !date || !durationMinutes || questionIds.length === 0) {
-        alert("Por favor, completa todos los campos del examen y añade al menos una pregunta.");
+        alert('Por favor, completa todos los campos del examen y añade al menos una pregunta.');
         return;
       }
 
@@ -183,44 +194,45 @@ const AddExamPage = () => {
           exam_date: date,
           total_seconds: String(Number(durationMinutes) * 60),
           question_ids: questionIds,
+          state: isPublished ? 1 : 0,
         });
-        alert("Examen actualizado con éxito 🎉");
+        alert('Examen actualizado con éxito 🎉');
       } else {
         await new Promise((res) => setTimeout(res, 500));
-        const examRes = await axios.post("/teacher/test", {
+        const examRes = await axios.post('/teacher/test', {
           title: title.trim(),
           class_id: classId,
           exam_date: date,
           total_seconds: String(Number(durationMinutes) * 60),
+          state: isPublished ? 1 : 0,
         });
         const testId = examRes.data.id;
-        await axios.post("/teacher/question/assign-test", {
+        await axios.post('/teacher/question/assign-test', {
           question_ids: questionIds,
           test_id: testId,
         });
-        alert("Examen guardado y preguntas asignadas con éxito 🎉");
+        alert('Examen guardado y preguntas asignadas con éxito 🎉');
       }
 
       navigate(`/teacher/class/${classId}/activities`);
     } catch (error) {
-      console.error("Error al guardar el examen:", error.response?.data || error);
+      console.error('Error al guardar el examen:', error.response?.data || error);
       if (error.response?.data?.errors) {
         alert(
-          "Error de validación: " +
-          Object.entries(error.response.data.errors)
-            .map(([campo, msgs]) => `${campo}: ${msgs.join(", ")}`)
-            .join(" | ")
+          'Error de validación: ' +
+            Object.entries(error.response.data.errors)
+              .map(([campo, msgs]) => `${campo}: ${msgs.join(', ')}`)
+              .join(' | ')
         );
       } else if (error.response?.data?.error) {
-        alert("Error: " + error.response.data.error);
+        alert('Error: ' + error.response.data.error);
       } else {
-        alert("Ocurrió un error guardando el examen. Revisa la consola.");
+        alert('Ocurrió un error guardando el examen. Revisa la consola.');
       }
     }
   };
 
   const tagOptions = [];
-
 
   return (
     <Layout isTeacher={true}>
@@ -244,7 +256,7 @@ const AddExamPage = () => {
             transition={{ delay: 0.2 }}
             className="text-4xl font-extrabold text-center text-[#7B61FF] drop-shadow-sm"
           >
-            {examId ? "Editar Examen" : "Crear Examen"}
+            {examId ? 'Editar Examen' : 'Crear Examen'}
           </motion.h1>
 
           <div className="md:flex gap-8">
@@ -278,10 +290,28 @@ const AddExamPage = () => {
                   onChange={(e) => setDurationMinutes(e.target.value)}
                   className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-[#7B61FF] focus:border-[#7B61FF] bg-white dark:bg-gray-700 dark:text-white"
                 />
+                <div className="flex items-center gap-2 col-span-1 md:col-span-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsPublished((prev) => !prev)}
+                    className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition"
+                    title={
+                      isPublished
+                        ? 'Examen publicado (clic para despublicar)'
+                        : 'Examen en borrador (clic para publicar)'
+                    }
+                  >
+                    {isPublished ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                    {isPublished ? 'Publicado' : 'Borrador'}
+                  </button>
+                </div>
               </div>
 
               {/* Sección preguntas */}
-              <motion.div whileHover={{ scale: 1.01 }} className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition">
+              <motion.div
+                whileHover={{ scale: 1.01 }}
+                className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition"
+              >
                 <div className="flex justify-between items-center">
                   <h2 className="text-lg font-semibold text-[#7B61FF]">Preguntas del examen</h2>
                   <button
@@ -298,7 +328,9 @@ const AddExamPage = () => {
                 <h2 className="text-lg font-semibold mb-4 text-[#7B61FF]">Seleccionar del banco</h2>
                 <div className="border dark:border-gray-600 p-4 rounded-lg max-h-72 overflow-y-auto space-y-3 bg-white dark:bg-gray-700">
                   {almacenPreguntas.length === 0 ? (
-                    <p className="text-sm text-gray-500 dark:text-gray-300">No hay preguntas disponibles.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-300">
+                      No hay preguntas disponibles.
+                    </p>
                   ) : (
                     <AnimatePresence>
                       {almacenPreguntas
@@ -351,8 +383,13 @@ const AddExamPage = () => {
                         exit={{ opacity: 0, x: -10 }}
                         className="bg-white dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm flex justify-between items-center hover:bg-purple-50 dark:hover:bg-purple-600 transition-all duration-200"
                       >
-                        <div onClick={() => handleEditPregunta(pregunta)} className="cursor-pointer w-full">
-                          <p className="font-medium">{pregunta.name || pregunta.title || 'Pregunta sin título'}</p>
+                        <div
+                          onClick={() => handleEditPregunta(pregunta)}
+                          className="cursor-pointer w-full"
+                        >
+                          <p className="font-medium">
+                            {pregunta.name || pregunta.title || 'Pregunta sin título'}
+                          </p>
                           <p className="text-xs text-gray-500 capitalize">{pregunta.type}</p>
                         </div>
                         <button
