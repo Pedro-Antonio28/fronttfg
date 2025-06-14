@@ -104,7 +104,7 @@ export default function FillMultipleQuestion({ question, answer, onChange }) {
               >
                 <option value="">-- Seleccionar --</option>
                 {part.options.map((option, optionIndex) => (
-                  <option key={optionIndex} value={optionIndex}>
+                  <option key={optionIndex} value={option}>
                     {option}
                   </option>
                 ))}
