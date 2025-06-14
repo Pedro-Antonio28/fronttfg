@@ -24,6 +24,9 @@ import DirectorRegister from './modules/director/pages/DirectorRegister.jsx';
 import DirectorDashboard from './modules/director/pages/DirectorDashboard.jsx';
 import AddExamPage from './modules/teacher/pages/AddExamPage.jsx';
 import ExamPage from './modules/student/pages/ExamPage.jsx';
+import StudentProfile from "./modules/student/pages/StudentProfile.jsx";
+import TeacherProfile from "./modules/teacher/pages/TeacherProfile.jsx";
+
 
 function App() {
   return (
@@ -80,6 +83,8 @@ function App() {
           </ProtectedRoute>
         }
       />
+        <Route path={"/student/profile"} element={<StudentProfile />} />
+        <Route path={"/teacher/profile"} element={<TeacherProfile />} />
     </Routes>
   );
 }
