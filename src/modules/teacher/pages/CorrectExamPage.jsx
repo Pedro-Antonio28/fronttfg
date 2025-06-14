@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '@/shared/functions/axiosConfig';
 import Layout from '../../../shared/components/Layout';
+import { motion } from 'framer-motion';
 
 export default function CorrectStudentExam() {
   const { testId, studentId } = useParams();
@@ -37,6 +38,11 @@ export default function CorrectStudentExam() {
   };
 
   const handleSubmit = async () => {
+    if (Object.keys(marks).length === 0) {
+      alert('Este examen no contiene preguntas de desarrollo que necesiten corrección manual.');
+      return;
+    }
+
     try {
       await axios.post(`/teacher/test/${testId}/submissions/${studentId}/grade`, { marks });
       alert('Notas guardadas correctamente.');
@@ -47,16 +53,38 @@ export default function CorrectStudentExam() {
     }
   };
 
+
   const renderContent = (q) => {
     if (!q.content) return null;
 
-    if (q.type === 'fill_blank' && typeof q.content === 'object') {
+    if (q.type === 'fill_blank') {
+      const text = typeof q.title === 'string' ? q.title : '';
+      const studentAnswers = Array.isArray(q.answer) ? q.answer : [];
+
+      const parts = text.split(/\[🔲(\d+)\]/g);
+
       return (
-        <p className="whitespace-pre-wrap">
-          {(q.content.text || '').replace(/\[🔲\d+]/g, '______')}
+        <p className="whitespace-pre-wrap leading-relaxed">
+          {parts.map((part, idx) => {
+            if (idx % 2 === 0) {
+              return part;
+            } else {
+              const blankIndex = parseInt(part, 10) - 1;
+              const response = studentAnswers[blankIndex] ?? '—';
+              return (
+                <span
+                  key={idx}
+                  className="inline-block px-2 py-0.5 mx-1 bg-yellow-100 text-yellow-800 rounded-md font-mono text-sm border border-yellow-300"
+                >
+              {response}
+            </span>
+              );
+            }
+          })}
         </p>
       );
     }
+
 
     if (q.type === 'match' && Array.isArray(q.content)) {
       return (
@@ -98,32 +126,51 @@ export default function CorrectStudentExam() {
 
   return (
     <Layout isTeacher>
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
-        <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-          <button
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 text-gray-900 dark:text-white"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => navigate(-1)}
             className="text-sm px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow transition duration-200"
           >
             ← Volver atrás
-          </button>
+          </motion.button>
 
-          <h1 className="text-2xl font-bold mb-6 text-purple-700 dark:text-purple-300">
+          <motion.h1
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-2xl font-bold mb-6 text-purple-700 dark:text-purple-300"
+          >
             Corrección del examen #{testId} del alumno #{studentId}
-
-          </h1>
+          </motion.h1>
 
           {loading ? (
             <p>Cargando preguntas...</p>
           ) : (
             <div className="space-y-6">
               {questions.map((q, index) => (
-                <div
+                <motion.div
                   key={q.question_id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
                   className={`p-4 border rounded
-                  ${q.type !== 'text' && q.mark > 0 ? 'bg-green-100 dark:bg-green-900/30 border-green-400' : ''}
-                  ${q.type !== 'text' && q.mark === 0 ? 'bg-red-100 dark:bg-red-900/30 border-red-400' : ''}
-                  ${q.type === 'text' || q.mark === null ? 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-700' : ''}
-                    `}
+                ${q.type !== 'text' && q.mark > 0 ? 'bg-green-100 dark:bg-green-900/30 border-green-400' : ''}
+                ${q.type !== 'text' && q.mark === 0 ? 'bg-red-100 dark:bg-red-900/30 border-red-400' : ''}
+                ${q.type === 'text' || q.mark === null ? 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-700' : ''}
+                `}
                 >
                   <h3 className="font-semibold text-purple-700 dark:text-purple-300">
                     {index + 1}. {q.title}
@@ -198,11 +245,11 @@ export default function CorrectStudentExam() {
                     </p>
                   )}
 
-
                   {q.type === 'text' && (
                     <div className="mt-3">
                       <label className="block text-sm font-medium mb-1">Nota (0-10)</label>
-                      <input
+                      <motion.input
+                        whileFocus={{ scale: 1.02 }}
                         type="number"
                         min="0"
                         max="10"
@@ -213,21 +260,29 @@ export default function CorrectStudentExam() {
                       />
                     </div>
                   )}
-                </div>
+                </motion.div>
               ))}
 
-              <div className="text-right mt-8">
-                <button
+              <motion.div
+                className="text-right mt-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleSubmit}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded shadow"
                 >
                   Guardar notas
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             </div>
           )}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </Layout>
   );
+
 }

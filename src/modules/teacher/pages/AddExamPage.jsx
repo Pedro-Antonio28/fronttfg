@@ -62,6 +62,7 @@ const AddExamPage = () => {
     }
   };
 
+
   // Cargar datos del examen en modo edición
   useEffect(() => {
     if (examId) {
@@ -81,6 +82,7 @@ const AddExamPage = () => {
               typeof tag === 'string' ? tag : (tag.name ?? tag.value)
             ),
             content: q.answer,
+            mark: q.mark ?? 1,
           }));
           setPreguntas(loadedPregs);
           setQuestionIds(loadedPregs.map((q) => q.id));
@@ -123,6 +125,7 @@ const AddExamPage = () => {
           type: pregunta.type || 'single',
           tags: pregunta.tags ?? [],
           content: pregunta.content || pregunta.answer,
+          mark: 1,
         },
       ]);
       setQuestionIds((prev) => [...prev, pregunta.id]);
@@ -181,11 +184,24 @@ const AddExamPage = () => {
   };
 
   const handleSaveExam = async () => {
+    const totalMarks = preguntas.reduce((acc, p) => acc + (parseFloat(p.mark) || 0), 0);
+    if (totalMarks !== 10) {
+      alert(`⚠️ La suma de los valores de las preguntas debe ser exactamente 10. Actualmente es ${totalMarks}.`);
+      return;
+    }
+
     try {
       if (!title.trim() || !date || !durationMinutes || questionIds.length === 0) {
         alert('Por favor, completa todos los campos del examen y añade al menos una pregunta.');
         return;
       }
+
+      const totalMarks = preguntas.reduce((acc, p) => acc + (parseFloat(p.mark) || 0), 0);
+      if (totalMarks !== 10) {
+        alert(`⚠️ La suma de los valores de las preguntas debe ser exactamente 10. Actualmente es ${totalMarks}.`);
+        return;
+      }
+
 
       if (examId) {
         await axios.put(`/teacher/test/${examId}`, {
@@ -193,9 +209,13 @@ const AddExamPage = () => {
           class_id: classId,
           exam_date: date,
           total_seconds: String(Number(durationMinutes) * 60),
-          question_ids: questionIds,
+          questions: preguntas.map((p) => ({
+            id: p.id,
+            mark: p.mark ?? 1,
+          })),
           state: isPublished ? 1 : 0,
         });
+
         alert('Examen actualizado con éxito 🎉');
       } else {
         await new Promise((res) => setTimeout(res, 500));
@@ -208,8 +228,11 @@ const AddExamPage = () => {
         });
         const testId = examRes.data.id;
         await axios.post('/teacher/question/assign-test', {
-          question_ids: questionIds,
           test_id: testId,
+          questions: preguntas.map((p) => ({
+            id: p.id,
+            mark: p.mark ?? 1,
+          })),
         });
         alert('Examen guardado y preguntas asignadas con éxito 🎉');
       }
@@ -233,6 +256,7 @@ const AddExamPage = () => {
   };
 
   const tagOptions = [];
+
 
   return (
     <Layout isTeacher={true}>
@@ -381,26 +405,48 @@ const AddExamPage = () => {
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
-                        className="bg-white dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm flex justify-between items-center hover:bg-purple-50 dark:hover:bg-purple-600 transition-all duration-200"
+                        className="bg-white dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm flex flex-col gap-1 hover:bg-purple-50 dark:hover:bg-purple-600 transition-all duration-200"
                       >
-                        <div
-                          onClick={() => handleEditPregunta(pregunta)}
-                          className="cursor-pointer w-full"
-                        >
-                          <p className="font-medium">
-                            {pregunta.name || pregunta.title || 'Pregunta sin título'}
-                          </p>
-                          <p className="text-xs text-gray-500 capitalize">{pregunta.type}</p>
+                        <div className="flex justify-between items-start w-full">
+                          <div
+                            onClick={() => handleEditPregunta(pregunta)}
+                            className="cursor-pointer flex-1"
+                          >
+                            <p className="font-medium">
+                              {pregunta.name || pregunta.title || 'Pregunta sin título'}
+                            </p>
+                            <p className="text-xs text-gray-500 capitalize">{pregunta.type}</p>
+                          </div>
+                          <button
+                            onClick={() => eliminarPregunta(pregunta.id)}
+                            className="text-red-500 hover:text-red-700 dark:hover:text-red-400 font-bold text-lg"
+                            title="Eliminar"
+                          >
+                            ✕
+                          </button>
                         </div>
-                        <button
-                          onClick={() => eliminarPregunta(pregunta.id)}
-                          className="ml-3 text-red-500 hover:text-red-700 dark:hover:text-red-400 font-bold text-lg"
-                          title="Eliminar"
-                        >
-                          ✕
-                        </button>
+
+                        <div className="flex justify-between items-center">
+                          <label className="text-sm text-gray-600 dark:text-gray-300 mr-2">
+                            Valor:
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.1"
+                            value={pregunta.mark || ''}
+                            onChange={(e) => {
+                              const valor = parseFloat(e.target.value) || 0;
+                              setPreguntas((prev) =>
+                                prev.map((p) => (p.id === pregunta.id ? { ...p, mark: valor } : p))
+                              );
+                            }}
+                            className="w-20 px-2 py-1 border rounded text-sm bg-white dark:bg-gray-600"
+                          />
+                        </div>
                       </motion.div>
                     ))}
+
                   </AnimatePresence>
                 </div>
 

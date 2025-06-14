@@ -102,28 +102,30 @@ const ClassActivitiesBase = ({ useClassHook, showAddButton = false, onAddClick }
                           )}
                         </td>
                         <td className="py-2 px-3 text-center space-x-2">
-                          {rol === 'student' && test.has_attempt ? (
-                            <CheckCircle
-                              className="inline w-5 h-5 text-blue-500"
-                              title="Ya realizado"
-                            />
-                          ) : test.is_published ? (
-                            <Unlock className="inline w-5 h-5 text-green-500" title="Publicado" />
-                          ) : (
-                            <Lock className="inline w-5 h-5 text-red-500" title="Borrador" />
-                          )}
+                          <>
+                            {rol === 'student' && test.has_attempt ? (
+                              <CheckCircle
+                                className="inline w-5 h-5 text-blue-500"
+                                title="Ya realizado"
+                              />
+                            ) : test.is_published ? (
+                              <Unlock className="inline w-5 h-5 text-green-500" title="Publicado" />
+                            ) : (
+                              <Lock className="inline w-5 h-5 text-red-500" title="Borrador" />
+                            )}
 
-                          {rol === 'teacher' && test.is_published && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation(); // prevenir navegación del <tr>
-                                navigate(`/teacher/test/${test.id}/submissions`);
-                              }}
-                              className="ml-2 px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
-                            >
-                              Corregir
-                            </button>
-                          )}
+                            {rol === 'teacher' && test.is_published ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/teacher/test/${test.id}/submissions`);
+                                }}
+                                className="ml-2 px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
+                              >
+                                Corregir
+                              </button>
+                            ) : null}
+                          </>
                         </td>
                       </motion.tr>
                     ))}
