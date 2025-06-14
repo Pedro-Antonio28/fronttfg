@@ -6,6 +6,7 @@ import logo from '../../shared/assets/images/logo.png'; // Asegúrate de que la 
 import logo_blanco from '../../shared/assets/images/logo_blanco.png'; // Asegúrate de que la ruta sea correcta
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({ isDirector, isTeacher, isStudent }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,19 +14,16 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
   const { user, logout } = useAuth();
   const isLoggedIn = !!user;
   const role = user?.role;
+  const navigate = useNavigate();
 
   // Configuración por rol
   const roleConfig = {
-    director: [
-      { name: 'Almacén', href: '/storage' },
-    ],
+    director: [{ name: 'Almacén', href: '/storage' }],
     teacher: [
       { name: 'Almacén', href: '/teacher/storage-bank' },
       { name: 'Nueva Clase', href: '/new-classroom' },
     ],
-    student: [
-      { name: 'Unirse a Clase', href: '/student/join-class' },
-    ],
+    student: [{ name: 'Unirse a Clase', href: '/student/join-class' }],
     guest: [
       { name: 'Soy Profesor', href: '/teacher/login' },
       { name: 'Soy Director', href: '/director/login' },
@@ -42,22 +40,28 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
           {/* Logo con imagen */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <Link to="/" className="flex items-center">
+              <button
+                onClick={() => {
+                  if (role === 'student') navigate('/student/dashboard');
+                  else if (role === 'teacher') navigate('/teacher/dashboard');
+                  else if (role === 'director') navigate('/director/dashboard');
+                  else navigate('/');
+                }}
+                className="flex items-center"
+              >
                 <>
-                  {/* Logo para modo claro */}
                   <img
                     src={logo}
                     alt="Logo LUDUS claro"
                     className="h-50 w-auto block dark:hidden"
                   />
-                  {/* Logo para modo oscuro */}
                   <img
                     src={logo_blanco}
                     alt="Logo LUDUS oscuro"
                     className="h-50 w-auto hidden dark:block"
                   />
                 </>
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -96,7 +100,7 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
                 {showDropdown && (
                   <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow z-50">
                     <a
-                        href={`/${role}/profile`}
+                      href={`/${role}/profile`}
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Mi perfil
@@ -157,7 +161,7 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
             {isLoggedIn && (
               <>
                 <a
-                    href={`/${role}/profile`}
+                  href={`/${role}/profile`}
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
                 >
                   Mi perfil

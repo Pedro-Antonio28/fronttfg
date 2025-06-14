@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "@/shared/functions/axiosConfig";
-import { motion, AnimatePresence } from "framer-motion";
-import { MoreVertical } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from '@/shared/functions/axiosConfig';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MoreVertical } from 'lucide-react';
 
 const ClassMembersBase = ({ userRole }) => {
   const { classId } = useParams();
@@ -17,11 +17,11 @@ const ClassMembersBase = ({ userRole }) => {
         if (Array.isArray(res.data)) {
           setMembers(res.data);
         } else {
-          console.error("Respuesta inesperada:", res.data);
+          console.error('Respuesta inesperada:', res.data);
           setMembers([]);
         }
       } catch (error) {
-        console.error("Error al cargar los miembros:", error);
+        console.error('Error al cargar los miembros:', error);
         setMembers([]);
       } finally {
         setLoading(false);
@@ -32,14 +32,16 @@ const ClassMembersBase = ({ userRole }) => {
   }, [classId, userRole]);
 
   const handleRemove = async (memberId) => {
-    const confirmed = window.confirm("¿Estás seguro de que deseas echar al estudiante de la clase?");
+    const confirmed = window.confirm(
+      '¿Estás seguro de que deseas echar al estudiante de la clase?'
+    );
     if (!confirmed) return;
 
     try {
       await axios.delete(`/${userRole}/class/${classId}/member/${memberId}`);
       setMembers((prev) => prev.filter((m) => m.id !== memberId));
     } catch (error) {
-      console.error("Error al eliminar el miembro:", error);
+      console.error('Error al eliminar el miembro:', error);
     }
   };
 
@@ -65,20 +67,25 @@ const ClassMembersBase = ({ userRole }) => {
                 className="flex items-center justify-between bg-white dark:bg-gray-700 rounded-xl px-4 py-3 shadow-sm hover:shadow-md transition-shadow duration-200 relative"
               >
                 <div className="flex items-center space-x-4">
-                  <img
-                    src={`http://ludustfg.test/storage/${member.profile_img}`}
-                    alt={member.name}
-                    className="w-10 h-10 rounded-full object-cover border"
-                  />
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-800 dark:text-white">
-                      {member.name}
+                  {member?.profile_img ? (
+                    <img
+                      src={`http://ludustfg.test/storage/${member.profile_img}`}
+                      alt="Avatar"
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-medium">
+                      👤
                     </span>
+                  )}
+
+                  <div className="flex flex-col">
+                    <span className="font-medium text-gray-800 dark:text-white">{member.name}</span>
                     <span className="text-sm text-gray-500 dark:text-gray-300">Estudiante</span>
                   </div>
                 </div>
 
-                {userRole === "teacher" && (
+                {userRole === 'teacher' && (
                   <div className="relative">
                     <button
                       onClick={() =>

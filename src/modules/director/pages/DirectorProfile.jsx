@@ -1,7 +1,7 @@
-"use client"
-import { useState, useEffect } from "react"
-import axios from "@/shared/functions/axiosConfig"
-import Layout from "../../../shared/components/Layout.jsx"
+'use client';
+import { useState, useEffect } from 'react';
+import axios from '@/shared/functions/axiosConfig';
+import Layout from '../../../shared/components/Layout.jsx';
 
 const EditModal = ({ isOpen, onClose, userName, onSave }) => {
   const [tempName, setTempName] = useState('');
@@ -52,7 +52,6 @@ const EditModal = ({ isOpen, onClose, userName, onSave }) => {
   if (!isOpen) return null;
 
   return (
-
     <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md pointer-events-auto">
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Editar perfil</h2>
@@ -167,12 +166,18 @@ export default function DirectorProfile() {
               <div className="flex-1">
                 <div className="flex items-center gap-6 mb-8">
                   <div className="relative group hover:scale-105 transition-transform">
-                    <div className="w-36 h-36 rounded-full border-4 border-purple-200 overflow-hidden shadow-md">
-                      <img
-                        src={profileImage}
-                        alt="Foto de perfil"
-                        className="object-cover w-full h-full"
-                      />
+                    <div className="w-36 h-36 rounded-full border-4 border-purple-200 overflow-hidden shadow-md bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-6xl">
+                      {profileImage && !profileImage.includes('placeholder') ? (
+                        <img
+                          src={profileImage}
+                          alt="Foto de perfil"
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <span role="img" aria-label="avatar">
+                          👤
+                        </span>
+                      )}
                     </div>
                     <button
                       onClick={handleEditToggle}

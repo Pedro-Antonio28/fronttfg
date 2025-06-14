@@ -96,11 +96,7 @@ export default function ClassCard({ classItem, index, rol }) {
     document.title = classItem.class_name;
 
     const baseRoute =
-      rol === 'teacher'
-        ? '/teacher/class/'
-        : rol === 'director'
-          ? '/director/class/'
-          : '/student/class/';
+      rol === 'teacher' || rol === 'director' ? '/teacher/class/' : '/student/class/';
 
     navigate(`${baseRoute}${classItem.id}`);
   };
