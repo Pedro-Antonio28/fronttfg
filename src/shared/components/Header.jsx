@@ -17,16 +17,13 @@ const Header = ({ isDirector, isTeacher, isStudent }) => {
   // Configuración por rol
   const roleConfig = {
     director: [
-      { name: 'Bandeja', href: '/inbox' },
       { name: 'Almacén', href: '/storage' },
     ],
     teacher: [
-      { name: 'Bandeja', href: '/inbox' },
       { name: 'Almacén', href: '/teacher/storage-bank' },
       { name: 'Nueva Clase', href: '/new-classroom' },
     ],
     student: [
-      { name: 'Bandeja', href: '/inbox' },
       { name: 'Unirse a Clase', href: '/student/join-class' },
     ],
     guest: [

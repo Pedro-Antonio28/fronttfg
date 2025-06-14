@@ -10,14 +10,12 @@ import ProtectedRoute from './shared/components/ProtectedRoute';
 import StudentClassActivities from './modules/student/pages/StudentClassActivities';
 import StudentClassResults from './modules/student/pages/StudentClassResults.jsx';
 import StudentClassMembers from './modules/student/pages/StudentClassMembers.jsx';
-import StudentClassChat from './modules/student/pages/StudentClassChat.jsx';
 import JoinClass from './modules/student/pages/JoinClass.jsx';
 import StudentClassLayout from './modules/student/components/StudentClassLayout.jsx';
 import TeacherClassLayout from './modules/teacher/components/TeacherClassLayout.jsx';
 import TeacherClassActivities from './modules/teacher/pages/TeacherClassActivities.jsx';
 import TeacherClassResults from './modules/teacher/pages/TeacherClassResults.jsx';
 import TeacherClassMembers from './modules/teacher/pages/TeacherClassMembers.jsx';
-import TeacherClassChat from './modules/teacher/pages/TeacherClassChat.jsx';
 import StorageBank from './modules/teacher/pages/StorageBank.jsx';
 import DirectorLogin from './modules/director/pages/DirectorLogin.jsx';
 import DirectorRegister from './modules/director/pages/DirectorRegister.jsx';
@@ -61,14 +59,12 @@ function App() {
         <Route path="activities" element={<StudentClassActivities />} />
         <Route path="results" element={<StudentClassResults />} />
         <Route path="members" element={<StudentClassMembers />} />
-        <Route path="chat" element={<StudentClassChat />} />
       </Route>
 
       <Route path="/teacher/class/:classId" element={<TeacherClassLayout />}>
         <Route path="activities" element={<TeacherClassActivities />} />
         <Route path="results" element={<TeacherClassResults />} />
         <Route path="members" element={<TeacherClassMembers />} />
-        <Route path="chat" element={<TeacherClassChat />} />
       </Route>
       <Route path="/teacher/class/:classId/add-exam" element={<AddExamPage />} />
       <Route path="/teacher/class/:classId/exam/:examId" element={<AddExamPage />} />
