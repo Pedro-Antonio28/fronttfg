@@ -1,16 +1,18 @@
 "use client"
+import { useState, useEffect } from "react"
+import axios from "@/shared/functions/axiosConfig"
+import Layout from "../../../shared/components/Layout.jsx"
 
-import { useState } from "react"
-import Layout from "../../../shared/components/Layout.jsx";
-import ThemeToggle from "../../../shared/components/ThemeToggle.jsx";
+const ProgressCircle = ({ value, label }) => {
+    const porcentaje = Math.min(Math.max(value, 0), 10)
+    const circunferencia = 2 * Math.PI * 40
+    const progreso = ((10 - porcentaje) / 10) * circunferencia
 
-
-// Componente para los círculos de progreso
-const ProgressCircle = ({ value, label }) => (
-    <div className="flex flex-col items-center">
-        <div className="relative w-32 h-32">
-            <svg className="w-full h-full" viewBox="0 0 100 100">
-                <circle
+    return (
+      <div className="flex flex-col items-center">
+          <div className="relative w-32 h-32">
+              <svg className="w-full h-full" viewBox="0 0 100 100">
+                  <circle
                     className="text-gray-200"
                     strokeWidth="10"
                     stroke="currentColor"
@@ -18,218 +20,288 @@ const ProgressCircle = ({ value, label }) => (
                     r="40"
                     cx="50"
                     cy="50"
-                />
-                <circle
+                  />
+                  <circle
                     className="text-purple-500"
                     strokeWidth="10"
-                    strokeDasharray="251.2"
-                    strokeDashoffset="50.24"
+                    strokeDasharray={circunferencia}
+                    strokeDashoffset={progreso}
                     strokeLinecap="round"
                     stroke="currentColor"
                     fill="transparent"
                     r="40"
                     cx="50"
                     cy="50"
-                />
-                <text x="50" y="50" textAnchor="middle" dominantBaseline="middle" className="text-xl font-medium">
-                    {value}/10
-                </text>
-            </svg>
-        </div>
-        <span className="mt-2 text-sm font-medium">{label}</span>
-    </div>
-)
-
-// Componente para el modal de edición
-const EditModal = ({isOpen, onClose, userName, onSave}) => {
-    const [tempName, setTempName] = useState(userName)
-    const [selectedImage, setSelectedImage] = useState(null)
-    const [previewImage, setPreviewImage] = useState(null)
-
-    const handleNameChange = (e) => {
-        setTempName(e.target.value)
-    }
-
-    const handleImageChange = (e) => {
-        const file = e.target.files[0]
-        if (file) {
-            setSelectedImage(file)
-            setPreviewImage(URL.createObjectURL(file))
-        }
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        onSave(tempName, selectedImage)
-        onClose()
-    }
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0" onClick={onClose}></div>
-            <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl z-10">
-                <h2 className="text-xl font-bold mb-4">Editar perfil</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">Foto de perfil</label>
-                        <div className="flex items-center space-x-4">
-                            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100">
-                                {previewImage ? (
-                                    <img src={previewImage || "/placeholder.svg"} alt="Preview"
-                                         className="w-full h-full object-cover"/>
-                                ) : (
-                                    <img src="/placeholder.svg?height=80&width=80" alt="Current"
-                                         className="w-full h-full object-cover"/>
-                                )}
-                            </div>
-                            <label
-                                className="cursor-pointer px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-                                Cambiar foto
-                                <input type="file" className="hidden" accept="image/*" onChange={handleImageChange}/>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="name" className="block text-sm font-medium mb-1">
-                            Nombre
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            value={tempName}
-                            onChange={handleNameChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        />
-                    </div>
-
-                    <div className="flex justify-end space-x-2">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                        >
-                            Cancelar
-                        </button>
-                        <button type="submit"
-                                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
-                            Guardar
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                  />
+                  <text
+                    x="50"
+                    y="50"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-xl font-medium"
+                  >
+                      {value}/10
+                  </text>
+              </svg>
+          </div>
+          <span className="mt-2 text-sm font-medium">{label}</span>
+      </div>
     )
 }
 
+const EditModal = ({ isOpen, onClose, userName, onSave }) => {
+  const [tempName, setTempName] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (isOpen) {
+      setTempName(userName);
+      setSelectedImage(null);
+      setPreviewImage(null);
+      setErrors({});
+    }
+  }, [isOpen, userName]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!tempName || tempName.trim() === '') {
+      setErrors({ name: ['El campo nombre es obligatorio.'] });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('_method', 'PUT'); // <-- esto es clave
+    formData.append('name', tempName);
+    if (selectedImage) {
+      formData.append('profile_img', selectedImage);
+    }
+
+    try {
+      formData.append('_method', 'PUT');
+
+      const res = await axios.post('/teacher/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      onSave(res.data.name, res.data.profile_img);
+      onClose();
+    } catch (err) {
+      if (err.response?.status === 422) {
+        setErrors(err.response.data.errors || {});
+        console.error('Errores de validación:', err.response.data.errors);
+      } else {
+        console.error('Error al actualizar perfil', err);
+      }
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md pointer-events-auto">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Editar perfil</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Nombre */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+              Nombre
+            </label>
+            <input
+              type="text"
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name[0]}</p>}
+          </div>
+
+          {/* Imagen */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+              Foto de perfil
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  setSelectedImage(file);
+                  setPreviewImage(URL.createObjectURL(file));
+                }
+              }}
+            />
+            {previewImage && <img src={previewImage} className="w-20 h-20 rounded-full mt-2" />}
+            {errors.profile_img && (
+              <p className="text-red-500 text-sm mt-1">{errors.profile_img[0]}</p>
+            )}
+          </div>
+
+          {/* Botones */}
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 export default function TeacherProfile() {
-    const [userName, setUserName] = useState("Profesor Garcia ")
-    const [profileImage, setProfileImage] = useState("/placeholder.svg?height=128&width=128")
-    const [isEditing, setIsEditing] = useState(false)
+  const [userName, setUserName] = useState('Cargando...');
+  const [profileImage, setProfileImage] = useState('/placeholder.svg');
+  const [categories, setCategories] = useState([]);
+  const [exams, setExams] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
 
-    const handleEditToggle = () => {
-        setIsEditing(!isEditing)
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get('/teacher/profile');
+        setUserName(res.data.name);
+        setProfileImage(
+          res.data.profile_img
+            ? `http://ludustfg.test/storage/${res.data.profile_img}`
+            : '/placeholder.svg'
+        );
+        setCategories(res.data.classes);
+      } catch (err) {
+        console.error('Error al cargar el perfil del profesor', err);
+      }
+    };
+
+    const fetchTests = async () => {
+      try {
+        const res = await axios.get('/teacher/tests');
+        setExams(res.data);
+      } catch (err) {
+        console.error('Error al cargar los tests', err);
+      }
+    };
+
+    fetchProfile();
+    fetchTests();
+  }, []);
+
+  const handleEditToggle = () => setIsEditing(true);
+
+  const handleSaveProfile = (newName, newImagePath) => {
+    setUserName(newName);
+    if (newImagePath) {
+      setProfileImage(`http://ludustfg.test/storage/${newImagePath}`);
     }
+  };
 
-    const handleSaveProfile = (newName, newImage) => {
-        setUserName(newName)
-        if (newImage) {
-            setProfileImage(URL.createObjectURL(newImage))
-        }
-    }
-
-    // Datos de categorías
-    const categories = [
-        { label: "2ºDAW", value: 9 },
-        { label: "1ºASIR", value: 2 },
-        { label: "2ºDAM", value: 7 },
-        { label: "1ºSMR", value: 5 },
-    ]
-
-    // Datos de exámenes
-    const exams = [
-        { name: "Historia", score: 5 },
-        { name: "Matemáticas", score: 5 },
-        { name: "Lengua", score: 5 },
-    ]
-
-    return (
-        <Layout>
-            <div className="min-h-screen bg-gray-50 p-4 flex justify-center items-center">
-                <div className="w-full max-w-5xl bg-white rounded-lg border border-gray-200 shadow-md">
-
-                    {/* Content */}
-                    <div className="p-8">
-                        <div className="flex flex-col md:flex-row gap-10">
-                            {/* Left column */}
-                            <div className="flex-1">
-                                <div className="flex items-center gap-6 mb-8">
-                                    <div className="relative">
-                                        <div className="w-36 h-36 rounded-full border-4 border-gray-200 overflow-hidden relative">
-                                            <img
-                                                src={profileImage || "/placeholder.svg"}
-                                                alt="Foto de perfil"
-                                                className="object-cover w-full h-full"
-                                            />
-                                        </div>
-                                        <button
-                                            className="absolute bottom-1 right-1 bg-white p-2 rounded-full border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors"
-                                            onClick={handleEditToggle}
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            >
-                                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <h1 className="text-4xl font-serif">{userName}</h1>
-                                </div>
-
-                                <div className="space-y-6">
-
-
-                                    <div>
-                                        <h3 className="text-lg font-medium">Exámenes creados</h3>
-                                        <ul className="mt-3 space-y-2 text-gray-700">
-                                            {exams.map((exam, index) => (
-                                                <li key={index} className="pl-2 border-l-2 border-purple-300">
-                                                    Examen 1 {exam.name}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-
-                                    <button className="w-full py-3 bg-white border-2 border-gray-300 rounded-md font-medium hover:bg-gray-50 transition-colors">
-                                        Ver Todos los exámenes
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Right column */}
-                            <div className="flex-1">
-                                <div className="grid grid-cols-2 gap-6">
-                                    {categories.map((category, index) => (
-                                        <ProgressCircle key={index} value={category.value} label={category.label} />
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Modal de edición */}
-                {isEditing && (
-                    <EditModal isOpen={true} onClose={handleEditToggle} userName={userName} onSave={handleSaveProfile} />
-                )}
+  return (
+    <Layout>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 flex justify-center items-center transition-colors duration-300">
+        <div className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300">
+          <div className="p-8">
+            <div className="mb-6">
+              <button
+                onClick={() => window.history.back()}
+                className="text-purple-600 hover:text-purple-800 font-semibold transition-colors"
+              >
+                ← Volver
+              </button>
             </div>
-        </Layout>
-    )
+
+            <div className="flex flex-col md:flex-row gap-10">
+              {/* Left */}
+              <div className="flex-1">
+                <div className="flex items-center gap-6 mb-8">
+                  <div className="relative group transition-transform duration-300 hover:scale-105">
+                    <div className="w-36 h-36 rounded-full border-4 border-purple-200 overflow-hidden shadow-md">
+                      <img
+                        src={profileImage}
+                        alt="Foto de perfil"
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <button
+                      className="absolute bottom-1 right-1 bg-white dark:bg-gray-700 p-2 rounded-full border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                      onClick={handleEditToggle}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <h1 className="text-4xl font-serif text-gray-900 dark:text-white">{userName}</h1>
+                </div>
+
+                <div className="mt-8">
+                  <h2 className="text-xl font-semibold text-purple-700 dark:text-purple-400 mb-4">
+                    Exámenes creados
+                  </h2>
+                  <ul className="space-y-3">
+                    {exams.map((exam) => (
+                      <li
+                        key={exam.id}
+                        className="border-l-4 border-purple-400 bg-purple-50 dark:bg-purple-900 dark:bg-opacity-20 p-4 rounded-md shadow-sm transition hover:scale-[1.01]"
+                      >
+                        <p className="font-semibold text-gray-800 dark:text-white">{exam.title}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          Clase: <span className="font-medium">{exam.class_name}</span> — Fecha:{' '}
+                          {exam.exam_date}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Right */}
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold text-purple-700 dark:text-purple-400 mb-4">
+                  Medias por clase
+                </h2>
+                <div className="grid grid-cols-2 gap-6">
+                  {categories.map((clase) => (
+                    <div className="transition-transform hover:scale-105" key={clase.id}>
+                      <ProgressCircle value={clase.average_mark ?? 0} label={clase.name} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <EditModal
+        isOpen={isEditing}
+        onClose={() => setIsEditing(false)}
+        userName={userName}
+        onSave={handleSaveProfile}
+      />
+    </Layout>
+  );
 }
