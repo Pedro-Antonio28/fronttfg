@@ -23,8 +23,10 @@ import DirectorLogin from './modules/director/pages/DirectorLogin.jsx';
 import DirectorRegister from './modules/director/pages/DirectorRegister.jsx';
 import DirectorDashboard from './modules/director/pages/DirectorDashboard.jsx';
 import AddExamPage from './modules/teacher/pages/AddExamPage.jsx';
+import ExamPage from './modules/student/pages/ExamPage.jsx';
 import StudentProfile from "./modules/student/pages/StudentProfile.jsx";
 import TeacherProfile from "./modules/teacher/pages/TeacherProfile.jsx";
+
 
 function App() {
   return (
@@ -41,6 +43,7 @@ function App() {
         }
       />
       <Route path="/student/join-class" element={<JoinClass />} />
+      <Route path="/student/class/:classId/exam/:examId" element={<ExamPage />} />
 
       <Route path="/teacher/register" element={<TeacherRegister />} />
       <Route path="/teacher/login" element={<TeacherLogin />} />
@@ -69,8 +72,6 @@ function App() {
       </Route>
       <Route path="/teacher/class/:classId/add-exam" element={<AddExamPage />} />
       <Route path="/teacher/class/:classId/exam/:examId" element={<AddExamPage />} />
-
-
 
       <Route path="/director/register" element={<DirectorRegister />} />
       <Route path="/director/login" element={<DirectorLogin />} />

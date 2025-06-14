@@ -17,6 +17,7 @@ export const ClassProvider = ({ children }) => {
   const [loadingActivities, setLoadingActivities] = useState(false);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
   const [loadingCode, setLoadingCode] = useState(false);
+  const rol = 'teacher';
 
   const fetchJoinCode = async () => {
     try {
@@ -89,6 +90,8 @@ export const ClassProvider = ({ children }) => {
         loadingActivities,
         loadingParticipants,
         loadingCode,
+        rol,
+
       }}
     >
       {children}
