@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Calendar from './Calendar';
-import { CalendarDays, Timer, Lock, Unlock } from 'lucide-react';
+import { CalendarDays, Timer, Lock, Unlock, CheckCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -81,8 +81,8 @@ const ClassActivitiesBase = ({ useClassHook, showAddButton = false, onAddClick }
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.04 }}
                         onClick={() => {
-                          if (rol === 'student' && !test.is_published) {
-                            return;
+                          if (rol === 'student') {
+                            if (!test.is_published || test.has_attempt) return;
                           }
                           navigate(`/${rol}/class/${classId}/exam/${test.id}`);
                         }}
@@ -102,7 +102,12 @@ const ClassActivitiesBase = ({ useClassHook, showAddButton = false, onAddClick }
                           )}
                         </td>
                         <td className="py-2 px-3 text-center">
-                          {test.is_published ? (
+                          {rol === 'student' && test.has_attempt ? (
+                            <CheckCircle
+                              className="inline w-5 h-5 text-blue-500"
+                              title="Ya realizado"
+                            />
+                          ) : test.is_published ? (
                             <Unlock className="inline w-5 h-5 text-green-500" title="Publicado" />
                           ) : (
                             <Lock className="inline w-5 h-5 text-red-500" title="Borrador" />
