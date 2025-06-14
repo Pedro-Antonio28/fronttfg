@@ -25,6 +25,8 @@ import ExamPage from './modules/student/pages/ExamPage.jsx';
 import StudentProfile from "./modules/student/pages/StudentProfile.jsx";
 import TeacherProfile from "./modules/teacher/pages/TeacherProfile.jsx";
 import DirectorProfile from './modules/director/pages/DirectorProfile.jsx';
+import ExamSubmissionsPage from './modules/teacher/pages/ExamSubmissionsPage';
+import CorrectStudentExam from './modules/teacher/pages/CorrectExamPage.jsx';
 
 
 function App() {
@@ -83,6 +85,13 @@ function App() {
         <Route path={"/student/profile"} element={<StudentProfile />} />
         <Route path={"/teacher/profile"} element={<TeacherProfile />} />
         <Route path={"/director/profile"} element={<DirectorProfile />} />
+
+      <Route
+        path="/teacher/test/:testId/submissions"
+        element={<ExamSubmissionsPage />}
+      />
+
+      <Route path="/teacher/test/:testId/submissions/:studentId" element={<CorrectStudentExam />} />
 
     </Routes>
   );
