@@ -3,52 +3,6 @@ import { useState, useEffect } from "react"
 import axios from "@/shared/functions/axiosConfig"
 import Layout from "../../../shared/components/Layout.jsx"
 
-const ProgressCircle = ({ value, label }) => {
-    const porcentaje = Math.min(Math.max(value, 0), 10)
-    const circunferencia = 2 * Math.PI * 40
-    const progreso = ((10 - porcentaje) / 10) * circunferencia
-
-    return (
-      <div className="flex flex-col items-center">
-          <div className="relative w-32 h-32">
-              <svg className="w-full h-full" viewBox="0 0 100 100">
-                  <circle
-                    className="text-gray-200"
-                    strokeWidth="10"
-                    stroke="currentColor"
-                    fill="transparent"
-                    r="40"
-                    cx="50"
-                    cy="50"
-                  />
-                  <circle
-                    className="text-purple-500"
-                    strokeWidth="10"
-                    strokeDasharray={circunferencia}
-                    strokeDashoffset={progreso}
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="transparent"
-                    r="40"
-                    cx="50"
-                    cy="50"
-                  />
-                  <text
-                    x="50"
-                    y="50"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="text-xl font-medium"
-                  >
-                      {value}/10
-                  </text>
-              </svg>
-          </div>
-          <span className="mt-2 text-sm font-medium">{label}</span>
-      </div>
-    )
-}
-
 const EditModal = ({ isOpen, onClose, userName, onSave }) => {
   const [tempName, setTempName] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
@@ -73,19 +27,15 @@ const EditModal = ({ isOpen, onClose, userName, onSave }) => {
     }
 
     const formData = new FormData();
-    formData.append('_method', 'PUT'); // <-- esto es clave
+    formData.append('_method', 'PUT');
     formData.append('name', tempName);
     if (selectedImage) {
       formData.append('profile_img', selectedImage);
     }
 
     try {
-      formData.append('_method', 'PUT');
-
-      const res = await axios.post('/student/profile', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const res = await axios.post('/director/profile', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       onSave(res.data.name, res.data.profile_img);
@@ -93,7 +43,6 @@ const EditModal = ({ isOpen, onClose, userName, onSave }) => {
     } catch (err) {
       if (err.response?.status === 422) {
         setErrors(err.response.data.errors || {});
-        console.error('Errores de validación:', err.response.data.errors);
       } else {
         console.error('Error al actualizar perfil', err);
       }
@@ -103,11 +52,11 @@ const EditModal = ({ isOpen, onClose, userName, onSave }) => {
   if (!isOpen) return null;
 
   return (
+
     <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md pointer-events-auto">
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Editar perfil</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Nombre */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
               Nombre
@@ -121,7 +70,6 @@ const EditModal = ({ isOpen, onClose, userName, onSave }) => {
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name[0]}</p>}
           </div>
 
-          {/* Imagen */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
               Foto de perfil
@@ -143,7 +91,6 @@ const EditModal = ({ isOpen, onClose, userName, onSave }) => {
             )}
           </div>
 
-          {/* Botones */}
           <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
@@ -165,25 +112,27 @@ const EditModal = ({ isOpen, onClose, userName, onSave }) => {
   );
 };
 
-export default function StudentProfile() {
+export default function DirectorProfile() {
   const [userName, setUserName] = useState('Cargando...');
   const [profileImage, setProfileImage] = useState('/placeholder.svg');
-  const [categories, setCategories] = useState([]);
+  const [schoolName, setSchoolName] = useState('');
+  const [teachers, setTeachers] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get('/student/profile');
+        const res = await axios.get('/director/profile');
         setUserName(res.data.name);
         setProfileImage(
           res.data.profile_img
             ? `http://ludustfg.test/storage/${res.data.profile_img}`
             : '/placeholder.svg'
         );
-        setCategories(res.data.classes);
+        setSchoolName(res.data.school_name);
+        setTeachers(res.data.teachers);
       } catch (err) {
-        console.error('Error al cargar el perfil del profesor', err);
+        console.error('Error al cargar el perfil del director', err);
       }
     };
 
@@ -201,13 +150,13 @@ export default function StudentProfile() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 flex justify-center items-center transition-colors duration-300">
-        <div className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 flex justify-center items-center">
+        <div className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
           <div className="p-8">
             <div className="mb-6">
               <button
                 onClick={() => window.history.back()}
-                className="text-purple-600 hover:text-purple-800 font-semibold transition-colors"
+                className="text-purple-600 hover:text-purple-800 font-semibold"
               >
                 ← Volver
               </button>
@@ -217,7 +166,7 @@ export default function StudentProfile() {
               {/* Left */}
               <div className="flex-1">
                 <div className="flex items-center gap-6 mb-8">
-                  <div className="relative group transition-transform duration-300 hover:scale-105">
+                  <div className="relative group hover:scale-105 transition-transform">
                     <div className="w-36 h-36 rounded-full border-4 border-purple-200 overflow-hidden shadow-md">
                       <img
                         src={profileImage}
@@ -226,8 +175,8 @@ export default function StudentProfile() {
                       />
                     </div>
                     <button
-                      className="absolute bottom-1 right-1 bg-white dark:bg-gray-700 p-2 rounded-full border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                       onClick={handleEditToggle}
+                      className="absolute bottom-1 right-1 bg-white dark:bg-gray-700 p-2 rounded-full border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -244,27 +193,39 @@ export default function StudentProfile() {
                       </svg>
                     </button>
                   </div>
-                  <h1 className="text-4xl font-serif text-gray-900 dark:text-white">{userName}</h1>
+                  <div className="flex flex-col">
+                    <h1 className="text-4xl font-serif text-gray-900 dark:text-white">
+                      {userName}
+                    </h1>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{schoolName}</p>
+                  </div>
                 </div>
               </div>
 
               {/* Right */}
               <div className="flex-1">
                 <h2 className="text-xl font-semibold text-purple-700 dark:text-purple-400 mb-4">
-                  Medias por clase
+                  Profesores asignados
                 </h2>
-                <div className="grid grid-cols-2 gap-6">
-                  {categories.map((clase) => (
-                    <div className="transition-transform hover:scale-105" key={clase.id}>
-                      <ProgressCircle value={clase.average_mark ?? 0} label={clase.name} />
-                    </div>
+                <ul className="space-y-4">
+                  {teachers.map((teacher) => (
+                    <li
+                      key={teacher.id}
+                      className="bg-purple-50 dark:bg-purple-900 dark:bg-opacity-20 border-l-4 border-purple-400 p-4 rounded shadow-sm"
+                    >
+                      <p className="font-semibold text-gray-800 dark:text-white">{teacher.name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        {teacher.id} — {teacher.email}
+                      </p>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <EditModal
         isOpen={isEditing}
         onClose={() => setIsEditing(false)}

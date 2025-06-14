@@ -24,6 +24,7 @@ import AddExamPage from './modules/teacher/pages/AddExamPage.jsx';
 import ExamPage from './modules/student/pages/ExamPage.jsx';
 import StudentProfile from "./modules/student/pages/StudentProfile.jsx";
 import TeacherProfile from "./modules/teacher/pages/TeacherProfile.jsx";
+import DirectorProfile from './modules/director/pages/DirectorProfile.jsx';
 
 
 function App() {
@@ -81,6 +82,8 @@ function App() {
       />
         <Route path={"/student/profile"} element={<StudentProfile />} />
         <Route path={"/teacher/profile"} element={<TeacherProfile />} />
+        <Route path={"/director/profile"} element={<DirectorProfile />} />
+
     </Routes>
   );
 }
