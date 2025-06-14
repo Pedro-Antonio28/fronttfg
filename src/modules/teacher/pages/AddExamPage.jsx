@@ -70,7 +70,7 @@ const AddExamPage = () => {
           const res = await axios.get(`/teacher/test/${examId}`);
           const test = res.data;
           setTitle(test.title);
-          setIsPublished(!!test.state);
+          setIsPublished(Number(test.is_published) === 1);
           setDate(test.exam_date);
           setDurationMinutes(String(Number(test.total_seconds) / 60));
           const loadedPregs = test.questions.map((q) => ({
