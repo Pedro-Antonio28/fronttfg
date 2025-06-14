@@ -1,53 +1,53 @@
-"use client"
-import { useState, useEffect } from "react"
-import axios from "@/shared/functions/axiosConfig"
-import Layout from "../../../shared/components/Layout.jsx"
+'use client';
+import { useState, useEffect } from 'react';
+import axios from '@/shared/functions/axiosConfig';
+import Layout from '../../../shared/components/Layout.jsx';
 
 const ProgressCircle = ({ value, label }) => {
-    const porcentaje = Math.min(Math.max(value, 0), 10)
-    const circunferencia = 2 * Math.PI * 40
-    const progreso = ((10 - porcentaje) / 10) * circunferencia
+  const porcentaje = Math.min(Math.max(value, 0), 10);
+  const circunferencia = 2 * Math.PI * 40;
+  const progreso = ((10 - porcentaje) / 10) * circunferencia;
 
-    return (
-      <div className="flex flex-col items-center">
-          <div className="relative w-32 h-32">
-              <svg className="w-full h-full" viewBox="0 0 100 100">
-                  <circle
-                    className="text-gray-200"
-                    strokeWidth="10"
-                    stroke="currentColor"
-                    fill="transparent"
-                    r="40"
-                    cx="50"
-                    cy="50"
-                  />
-                  <circle
-                    className="text-purple-500"
-                    strokeWidth="10"
-                    strokeDasharray={circunferencia}
-                    strokeDashoffset={progreso}
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="transparent"
-                    r="40"
-                    cx="50"
-                    cy="50"
-                  />
-                  <text
-                    x="50"
-                    y="50"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="text-xl font-medium"
-                  >
-                      {value}/10
-                  </text>
-              </svg>
-          </div>
-          <span className="mt-2 text-sm font-medium">{label}</span>
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-32 h-32">
+        <svg className="w-full h-full" viewBox="0 0 100 100">
+          <circle
+            className="text-gray-200"
+            strokeWidth="10"
+            stroke="currentColor"
+            fill="transparent"
+            r="40"
+            cx="50"
+            cy="50"
+          />
+          <circle
+            className="text-purple-500"
+            strokeWidth="10"
+            strokeDasharray={circunferencia}
+            strokeDashoffset={progreso}
+            strokeLinecap="round"
+            stroke="currentColor"
+            fill="transparent"
+            r="40"
+            cx="50"
+            cy="50"
+          />
+          <text
+            x="50"
+            y="50"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            className="text-xl font-medium"
+          >
+            {value}/10
+          </text>
+        </svg>
       </div>
-    )
-}
+      <span className="mt-2 text-sm font-medium">{label}</span>
+    </div>
+  );
+};
 
 const EditModal = ({ isOpen, onClose, userName, onSave }) => {
   const [tempName, setTempName] = useState('');
@@ -229,12 +229,18 @@ export default function TeacherProfile() {
               <div className="flex-1">
                 <div className="flex items-center gap-6 mb-8">
                   <div className="relative group transition-transform duration-300 hover:scale-105">
-                    <div className="w-36 h-36 rounded-full border-4 border-purple-200 overflow-hidden shadow-md">
-                      <img
-                        src={profileImage}
-                        alt="Foto de perfil"
-                        className="object-cover w-full h-full"
-                      />
+                    <div className="w-36 h-36 rounded-full border-4 border-purple-200 overflow-hidden shadow-md bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-6xl">
+                      {profileImage && !profileImage.includes('placeholder') ? (
+                        <img
+                          src={profileImage}
+                          alt="Foto de perfil"
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <span role="img" aria-label="avatar">
+                          👤
+                        </span>
+                      )}
                     </div>
                     <button
                       className="absolute bottom-1 right-1 bg-white dark:bg-gray-700 p-2 rounded-full border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
