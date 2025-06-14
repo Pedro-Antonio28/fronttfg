@@ -13,6 +13,7 @@ import MatchQuestion from '../components/MatchQuestion';
 import ProgressBar from '../components/ProgressBar';
 import SubmitExamModal from '../components/SubmitExamModal';
 import Layout from '../../../shared/components/Layout';
+import { useNavigationBlocker } from '../hooks/useNavigatorBlocker';
 
 export default function ExamPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -66,6 +67,19 @@ export default function ExamPage() {
     return () => clearInterval(timer);
   }, [loading, examData]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = 'Si recargas perderás el progreso del examen.';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+  useNavigationBlocker('¿Estás seguro de que quieres salir? Perderás el progreso del examen.');
+
   const handleAnswerChange = (questionId, answer) => {
     setAnswers((prev) => ({
       ...prev,
@@ -96,7 +110,7 @@ export default function ExamPage() {
     // Simulación de envío exitoso
     setTimeout(() => {
       // Redirigir a la página de resultados
-      window.location.href = '/exam/results';
+      alert('respuestas enviadas');
     }, 1500);
   };
 
