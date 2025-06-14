@@ -8,7 +8,6 @@ const navItems = [
   { label: 'Actividades', value: 'activities', icon: FileText },
   { label: 'Resultados', value: 'results', icon: BarChart },
   { label: 'Participantes', value: 'members', icon: Users },
-  { label: 'Chat', value: 'chat', icon: MessageSquare },
 ];
 
 const StudentClassLayout = ({ className: passedClassName }) => {
