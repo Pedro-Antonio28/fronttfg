@@ -42,7 +42,7 @@ const AddExamPage = () => {
       case 'multiple':
         return { correct: content.correct_options, options: content.options };
       case 'text':
-        return { answer: content.answer };
+        return {};
       case 'match':
         return { pairs: content.pairs };
       case 'fill_blank':
