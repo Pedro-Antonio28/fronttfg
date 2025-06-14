@@ -40,7 +40,7 @@ const TeacherClassLayout = ({ className: passedClassName }) => {
                   onClick={() => setShowSettings(true)}
                   className="p-2 rounded-full bg-purple-100 hover:bg-purple-200 dark:bg-purple-800 dark:hover:bg-purple-700 text-purple-700 dark:text-purple-200 transition hover:cursor-pointer"
                 >
-                <Settings className="w-5 h-5" />
+                  <Settings className="w-5 h-5" />
                 </button>
                 {/* Botón volver */}
                 <a
@@ -86,10 +86,7 @@ const TeacherClassLayout = ({ className: passedClassName }) => {
             </main>
           </div>
         </div>
-        <ClassSettingsModal
-          isOpen={showSettings}
-          onClose={() => setShowSettings(false)}
-        />
+        <ClassSettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
       </ClassProvider>
     </Layout>
   );
