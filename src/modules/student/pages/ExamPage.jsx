@@ -14,6 +14,7 @@ import ProgressBar from '../components/ProgressBar';
 import SubmitExamModal from '../components/SubmitExamModal';
 import Layout from '../../../shared/components/Layout';
 import { useNavigationBlocker } from '../hooks/useNavigatorBlocker';
+import { useNavigate } from 'react-router-dom';
 
 export default function ExamPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -25,6 +26,7 @@ export default function ExamPage() {
 
   const { classId } = useParams();
   const { examId } = useParams(); // asegúrate de tener esta parte en tu ruta: /class/:classId/exam/:examId
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchExam = async () => {
@@ -103,15 +105,20 @@ export default function ExamPage() {
     }
   };
 
-  const handleSubmitExam = () => {
-    // Aquí se enviarían las respuestas a la API
-    console.log('Respuestas a enviar:', answers);
+  const handleSubmitExam = async () => {
+    try {
+      console.log(answers);
+      const payload = {
+        answers,
+        time_remaining: timeRemaining,
+      };
 
-    // Simulación de envío exitoso
-    setTimeout(() => {
-      // Redirigir a la página de resultados
-      alert('respuestas enviadas');
-    }, 1500);
+      await axios.post(`/student/class/${classId}/exam/${examId}/submit`, payload);
+      navigate(`/student/class/${classId}/results`);
+    } catch (error) {
+      console.error('❌ Error al enviar el examen:', error);
+      alert('Error al enviar el examen. Intenta nuevamente.');
+    }
   };
 
   const isQuestionAnswered = (questionId) => {
